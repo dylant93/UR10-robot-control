@@ -9,11 +9,6 @@ import socket
 import time
 from math import pi as pi
 import numpy as np
-# from matplotlib import pyplot as plt
-# from PIL import Image
-# import pyk4a
-# from pyk4a import Config, PyK4A
-# import pandas as pd
 from geometry import rpy2rot, unit
 
 
@@ -55,8 +50,11 @@ class robot():
         else:
             print("Robot is offline, continuing program")
     
-    def FL(self,x,y,z,rx,ry,rz): # takes inputs in mm and degrees, outputs in meters and rads formatted list (FL) stands for formatted list
-        
+    def FL(self,x,y,z,rx,ry,rz): 
+        """Formatted List(FL).
+        Takes inputs in mm and degrees, outputs in meters and rads formatted list
+        This is the format that the UR10 will accept
+        """
         
         outputlist = [round(x/1000,2),round(y/1000,2),round(z/1000,2),round(rx*self.k,2),round(ry*self.k,2),round(rz*self.k,2)]
         [outputlist.append(outputlist[i]) for i in range(3,6)]
@@ -82,7 +80,12 @@ class robot():
         print(self.printformat)
         
     
-    def wtrJ(self,a=0.7,v=0.9,r=0,t=6): #write to robot joint
+    def wtrJ(self,a=0.7,v=0.9,r=0,t=6): 
+        """Write to robot via joint positions
+        This is a safe bet to start as a sort of home position because writing by coordinate positions
+        will sometimes have the robot move in strange ways from its internal calculations.
+        """
+        
         pos = self.homeJoint
         string = 'movej([%.2f,%.2f,%.2f,%.2f,%.2f,%.2f],a=%.2f,v=%.2f,r=%.2f)\n'%(pos[0]*self.k,pos[1]*self.k,pos[2]*self.k,pos[3]*self.k,pos[4]*self.k,pos[5]*self.k,a,v,r)
         print("Home joint")

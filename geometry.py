@@ -4,7 +4,7 @@ Created on Tue Feb 23 22:48:43 2021
 
 @author: Dylan Tan
 """
-# from math import pi as pi
+
 import math
 import numpy as np
 
@@ -16,6 +16,11 @@ def euclidean(a,b,axis=3):
 
 
 def getRmatrix(roll,pitch,yaw):
+    
+    """
+    Input: roll, pitch and yaw, in radians
+    Returns: 3 x 3 Rotation matrix
+    """
     
     yawMatrix = np.matrix([[math.cos(yaw), -math.sin(yaw), 0],
                            [math.sin(yaw), math.cos(yaw), 0],
@@ -34,8 +39,16 @@ def getRmatrix(roll,pitch,yaw):
     return R
 
 def rmat2rpy(R) :
+    """
+    Parameters
+    ----------
+    R : (3,3) np.array
+        Takes in (3,3) numpy array
 
-    # assert(isRotationMatrix(R))
+    Returns
+    -------
+    Roll pitch and yaw in radians
+    """
 
     sy = math.sqrt(R[0,0] * R[0,0] +  R[1,0] * R[1,0])
 
@@ -53,6 +66,18 @@ def rmat2rpy(R) :
     return np.array([x, y, z])
 
 def rmat2rot(rmat):
+    """
+    Parameters
+    ----------
+    rmat : (3,3) np array
+        3 by 3 rotation matrix
+
+    Returns
+    -------
+    Rotation vector where the W vector is the normalized magnitude of the 3 vectors
+    read more on the UR10's rotational vector expression if necessary.'
+    """
+    
     R = rmat
     theta = math.acos(((R[0, 0] + R[1, 1] + R[2, 2]) - 1) / 2)
     multi = 1 / (2 * math.sin(theta))
@@ -66,7 +91,10 @@ def rmat2rot(rmat):
     return outputrotationvector
 
 def rpy2rot(vector):
-    
+    """
+    Takes in anchor vector of length 9
+    Roll, pitch, yaw to rotation vector (UR10 version)
+    """
     roll = vector[6]
     pitch = vector[7]
     yaw = vector[8]
@@ -85,6 +113,11 @@ def rpy2rot(vector):
 
 
 def unit(inpt):
+    """
+    takes vector and outputs Unit vector 
+    """
+
+
     length=0
     for i in inpt:
         
@@ -93,6 +126,10 @@ def unit(inpt):
     return output
 
 def rotateonspot( mat , axis, theta):
+    """
+    Takes in an input (3,3) matrix, an axis(3 row vector) to rotate around and the angle to rotate it by in degrees
+    """
+    
     identity = np.eye(3)
     
     
@@ -110,8 +147,17 @@ def rotateonspot( mat , axis, theta):
     
     return newv
 
-# a = getRmatrix(0, 0, 0.785398)
-# print(a)
+if __name__ == '__main__':
+    
+    print("Testing all functions: ")
+    print("euclidean(): ",euclidean([1,1,1],[2,2,2],3))
+    print("getRmatrix:",getRmatrix(1.57,1.57,1.57))
+    print("rpy2rot: ",rpy2rot([0,0,0,0,0,0,1.57,1.57,1.57]))
+    print("rotateonspot: ", rotateonspot(np.eye(3),np.array([0,0,1]),30))
+    
+    
+    
+
 
 
 
