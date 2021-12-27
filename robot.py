@@ -17,22 +17,23 @@ For upside down orientation use +60 in the x axis
 """
 
 class robot():
+    
     """
     This class is used for UR10 robotic arm. 
     
     """
     homeJoint = (28.04,-69.40,-133.33,22.82,61.34,89.96) #(from base, 550,0,550) but is using upside down pointer with offset of 45mm, 0mm and 105mm x,y,z
-    homeJoint_newcamera = (31.07,-64.4,-134.49,18.98,58.31,89.94) #(from base, x,y,z is 550, 0, 550) use this if from upsie down camera reference
+    # homeJoint_newcamera = (31.07,-64.4,-134.49,18.98,58.31,89.94) #(from base, x,y,z is 550, 0, 550) use this if from upsie down camera reference
     
-    homeJoint_old=(23.0,-105.0,-143.0,68.46,66.26,90)   #a safe joint posiion described in joint movements so as to avoid ur10 resolving 
+    # homeJoint_old=(23.0,-105.0,-143.0,68.46,66.26,90)   #a safe joint posiion described in joint movements so as to avoid ur10 resolving 
                                                     #the positions weirdly if you use the 'move position' command
     k = pi/180
     
-                        #subnet = 255.255.255.0
+    #subnet = 255.255.255.0
     def __init__(self,IP="192.168.1.100",PORT=30002,connection=True,homedistance=1000):
         self.HOST_ROBOT =  IP
         self.PORT_ROBOT = PORT
-        self.home = self.FL(homedistance,0,360,0,90,0)   
+        self.home = self.FL(homedistance,0,550,0,90,0) #old is 360  
         self.anchor = self.FL(550,0,550,0,90,0)
         self.flyer = self.anchor.copy()
         self.translatebox = self.gettranslatebox()
@@ -71,14 +72,6 @@ class robot():
         print(self.printformat)
         
         
-    def printflyer(self):
-        self.printformat = {'XYZ': [round(i,2) for i in self.flyer[:3]],
-                            'Quart': [round(i,2) for i in self.flyer[3:6]],
-                            'RPY': [round(i,2) for i in self.flyer[6:9]],
-                            'VAxis': [round(i,2) for i in self.flyer[9:]]}
-        # testing()
-        print(self.printformat)
-        
     
     def wtrJ(self,a=0.7,v=0.9,r=0,t=6): 
         """Write to robot via joint positions
@@ -96,7 +89,26 @@ class robot():
         return
     
     
-    def wtr(self,pos,a=0.7,v=0.7,r=0,t=6): #write to robot via movements
+    def wtr(self,pos,a=0.7,v=0.7,r=0,t=6): 
+        """
+        Parameters
+        ----------
+        pos : TYPE
+            DESCRIPTION. len 9 list of formatted list
+        a : TYPE, float
+            DESCRIPTION. The default is 0.7. This is acceleration of the robot arm movement
+        v : TYPE, float
+            DESCRIPTION. The default is 0.7. This is velocity of arm movement
+        r : TYPE, float
+            DESCRIPTION. The default is 0.
+        t : TYPE, optional
+            DESCRIPTION. The default is 6. this is the sleep time to make sure that the movement is completed
+
+        Returns
+        -------
+        None.
+
+        """
 
         if(pos[0] <0.56 and pos[2] < 0.19):
             print("Did not carry out move, collision DANGER")
@@ -114,12 +126,47 @@ class robot():
         return
     
     def moveanchor(self,a=0.7,v=0.7,r=0,t=6):
+        """
+        
+
+        Parameters
+        ----------
+        a : TYPE, float
+            DESCRIPTION. The default is 0.7. This is acceleration of the robot arm movement
+        v : TYPE, float
+            DESCRIPTION. The default is 0.7. This is velocity of arm movement
+        r : TYPE, float
+            DESCRIPTION. The default is 0.
+        t : TYPE, optional
+            DESCRIPTION. The default is 6. this is the sleep time to make sure that the movement is completed
+
+        Returns
+        -------
+        None.
+
+        """
         self.wtr(self.anchor,a,v,r,t)
         self.flyer = self.anchor.copy()
         # self.
         return
     
     def rotateonspot(self,thetaH=0,thetaV=0):
+        """
+        
+
+        Parameters
+        ----------
+        thetaH : TYPE, optional
+            DESCRIPTION. The default is 0.
+        thetaV : TYPE, optional
+            DESCRIPTION. The default is 0.
+
+        Returns
+        -------
+        None.
+
+        """
+        
         identity = np.eye(3)
         
         if(thetaH!=0):
@@ -163,7 +210,23 @@ class robot():
         return
     
     def translateglobcm(self,x=0,y=0,z=0):
+        """
         
+
+        Parameters
+        ----------
+        x : TYPE, optional
+            DESCRIPTION. The default is 0.
+        y : TYPE, optional
+            DESCRIPTION. The default is 0.
+        z : TYPE, optional
+            DESCRIPTION. The default is 0.
+
+        Returns
+        -------
+        None.
+
+        """
         self.anchor[0] += x/100
         self.anchor[1] += y/100
         self.anchor[2] += z/100
@@ -171,7 +234,12 @@ class robot():
         return
     
     
-    def rotateanchor(self,thetaH=0,thetaV=0): #rotate the anchor about the home position in degree, Horizontal and Vertical theta
+    def rotateanchor(self,thetaH=0,thetaV=0): 
+        
+        """
+        Rotate anchor about the home position in degrees, Horizontal and Vertical
+        
+        """
 
         identity = np.eye(3)
 
@@ -225,6 +293,10 @@ class robot():
             self.anchor[3:6] = rpy2rot(self.anchor)
 
         return 
+    #%% 
+    """
+    These functions are no longer relavent but kept here for legacy purposes.
+    """
     
     def gettranslatebox(self, interval = 10, dim = 0.5): #get translation box from anchor. This will generate a list of positions based on the dimension
                                          #input. 
@@ -281,7 +353,13 @@ class robot():
         self.boxpos+=1
         
 
-
+    def printflyer(self):
+        self.printformat = {'XYZ': [round(i,2) for i in self.flyer[:3]],
+                            'Quart': [round(i,2) for i in self.flyer[3:6]],
+                            'RPY': [round(i,2) for i in self.flyer[6:9]],
+                            'VAxis': [round(i,2) for i in self.flyer[9:]]}
+        # testing()
+        print(self.printformat)
     
             
     

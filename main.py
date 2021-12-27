@@ -2,7 +2,7 @@
 """
 Created on Wed Feb 17 22:38:50 2021
 
-@author: holy_
+@author: Dylan Tan
 """
 # from PIL import Image
 import numpy as np
@@ -365,6 +365,7 @@ path = 'temp\\'
 robot = robot(connection=True,homedistance = 1000)
 camera = mykinectazure(connection=True,namecounter=1)
 camera.path = path
+# camera2 = mykinectazure(conn)
 
 df = pd.DataFrame( columns=['Cycle','Cone','RGBname', 'DEPTHname', 'RGBD', 'Pose', 'RelPose', 'Theta'])
 conetype = "C12"

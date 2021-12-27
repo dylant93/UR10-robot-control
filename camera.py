@@ -26,7 +26,22 @@ class mykinectazure():
 
 
     def __init__(self, connection = True, res = 1, namecounter = 0):
-        
+        """
+        Parameters
+        ----------
+        connection : TYPE, Bool
+            DESCRIPTION. The default is True. Put false if you want to work without the robot being connected
+        res : TYPE, int
+            DESCRIPTION. The default is 1. Resolution of the camera. default is 1 which means 3072,4096
+        namecounter : TYPE, int
+            DESCRIPTION. The default is 0. means the captured images will start naming from 0, change if you dont want to 
+            overwrite.
+
+        Returns
+        -------
+        None.
+
+        """
         self.k4a = PyK4A(Config(color_resolution=pyk4a.ColorResolution.RES_3072P,
                     camera_fps=pyk4a.FPS.FPS_15,           
                     depth_mode=pyk4a.DepthMode.NFOV_UNBINNED,))  # If using WFOV, camera_FPS must be specified, default 30fps will not work
@@ -50,7 +65,6 @@ class mykinectazure():
     def cap(self):
         if(self.connection):
             self.k4a.start()
-            # time.sleep(1)
             capture = self.k4a.get_capture()
             self.k4a.stop()
     
@@ -118,9 +132,6 @@ class mykinectazure():
         plt.savefig(self.path+self.visual+str(self.namecounter).zfill(4)+'.png')
         print("Press Q again to quit")
         plt.show()
-        
-
-        
         
         return
         

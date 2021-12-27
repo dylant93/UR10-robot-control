@@ -152,6 +152,7 @@ if __name__ == '__main__':
     print("Testing all functions: ")
     print("euclidean(): ",euclidean([1,1,1],[2,2,2],3))
     print("getRmatrix:",getRmatrix(1.57,1.57,1.57))
+    print("rmat2rpy: ", rmat2rpy(np.array([[0.8823529,-0.4705882,0],[0.4705882,0.8823529,0],[0,0,1]])))
     print("rpy2rot: ",rpy2rot([0,0,0,0,0,0,1.57,1.57,1.57]))
     print("rotateonspot: ", rotateonspot(np.eye(3),np.array([0,0,1]),30))
     
