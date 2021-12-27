@@ -22,7 +22,9 @@ class robot():
     This class is used for UR10 robotic arm. 
     
     """
-    homeJoint = (28.04,-69.40,-133.33,22.82,61.34,89.96) #(from base, 550,0,550) but is using upside down pointer with offset of 45mm, 0mm and 105mm x,y,z
+    homeJoint = (28.04,-69.40,-133.33,22.82,61.34,89.96) 
+    #(from base, 550,0,550) but is using upside down pointer with offset of 45mm, 0mm and 105mm x,y,z
+    
     # homeJoint_newcamera = (31.07,-64.4,-134.49,18.98,58.31,89.94) #(from base, x,y,z is 550, 0, 550) use this if from upsie down camera reference
     
     # homeJoint_old=(23.0,-105.0,-143.0,68.46,66.26,90)   #a safe joint posiion described in joint movements so as to avoid ur10 resolving 
@@ -237,7 +239,7 @@ class robot():
     def rotateanchor(self,thetaH=0,thetaV=0): 
         
         """
-        Rotate anchor about the home position in degrees, Horizontal and Vertical
+        Rotate anchor about the home position in degrees, Horizontal and Vertical axis specific for ease of use
         
         """
 
