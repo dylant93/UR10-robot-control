@@ -360,7 +360,7 @@ def Main_2(sourcenumber,targetnumber):
 
     # pcdimport = "combine3.ply"
     # pcdimport = "S05_GL3cut2_open_axisadj3scaled.ply"
-    pcdimport = "definedpcds/M01_00adjusted.ply"
+    pcdimport = "definedpcds/S01_00adjusted.ply"
 
     cad = o3d.io.read_point_cloud(pcdimport)    #combine3 and combine3cone testcombine0246cone combine0246357cone
                                                 #S05_GL3cut2_open_axisadj3scaled

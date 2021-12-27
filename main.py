@@ -359,11 +359,11 @@ def rotateoncamera(axischoice, theta):
     return
 
 
-# path = 'G:\\Dylan\\temp\\'
+
 path = 'temp\\'
 #try 1536p
 robot = robot(connection=True,homedistance = 1000)
-camera = mykinectazure(connection=True,namecounter=0)
+camera = mykinectazure(connection=True,namecounter=1)
 camera.path = path
 
 df = pd.DataFrame( columns=['Cycle','Cone','RGBname', 'DEPTHname', 'RGBD', 'Pose', 'RelPose', 'Theta'])
@@ -373,36 +373,19 @@ conetype = "C12"
 #%% this is moving part
 
 import pickle
-# tmat_experiment_gt
-# tmat_M01_gt
-# with open('tmat_experiment_gt.p', 'rb') as f:
-#     dict_tmat_gt = pickle.load(f)
 
-# tmat_0 = dict_tmat_gt[5]
-# tmat0trans = tmat_0[0:3,3]
 
-#tmat_M01_pred
-#tmat_experiment_pred
-#tmat_S05_gt
-#tmat_pred
-
-with open('final_tmat.p', 'rb') as f:
-# with open('Testcases/Testcase1/final_tmat.p', 'rb') as f:  
+with open('final_tmat.p', 'rb') as f: 
     dict_tmat_pred = pickle.load(f)
 
 
 
 # tmat_1 = dict_tmat_pred
+tmat_1 =np.array([[-0.2727546 ,  0.09546881, -0.95733517, -0.17310054],
+                  [-0.55009624,  0.80088506,  0.23659511,  0.17356807],
+                  [ 0.78930289,  0.59115888, -0.16592805, -0.66807057],
+                  [ 0.        ,  0.        ,  0.        ,  1.        ]])
 
-tmat_1 =np.array([[-3.30635673e-02, -1.98197441e-02, -9.99256713e-01, -1.19205665e-01],
-                  [-5.26183478e-01,  8.50370891e-01,  5.43773585e-04,  6.72287529e-02],
-                  [ 8.49728044e-01,  5.25810352e-01, -3.85451170e-02, -4.48891271e-01],
-                  [ 0.0,  0.0,  0.0, 1.00000000e+00]])
-
-# tmat_1 = np.array([[-0.04225816, -0.0173714,  -0.9989557,  -0.08659792],
-#                                         [-0.5617842,   0.82723064,  0.00937961,  0.04433292],
-#                                         [ 0.82620382,  0.56159389, -0.04471623, -0.50115483],
-#                                         [ 0.       ,   0.      ,    0.       ,   1.        ]])
 
 tmat1trans = tmat_1[0:3,3]
 tmat_1rot = tmat_1[0:3,0:3]
@@ -419,10 +402,14 @@ print("Camera trans: ",Translation)
 # robot.moveanchor()
 
 ##this is for upside down orientation
+# robot.rotateonspot(thetaV=-30)
+# robot.translateglobcm(x=20)
+# robot.translateglobcm(z=-7)
+
 robot.rotateonspot(thetaV=-30)
-robot.translateglobcm(x=20)
-robot.translateglobcm(z=-7)
-robot.moveanchor()
+robot.translateglobcm(x=3) #originially 3.9
+robot.translateglobcm(z=-26.8)
+# robot.moveanchor()
 
 drefframeT=crefftrans(robot.anchor)
 newt = np.matmul(Translation,drefframeT)
@@ -444,9 +431,9 @@ print("Robot trans: ",newt)
 
 # # upsidedown
 # robot.translateglobcm(y=newt[1]*100+4) #for rightupsideup is -2
-# robot.moveanchor()
+# # robot.moveanchor()
 # robot.translateglobcm(x=(newt[0]*100)) # forrightsideup is-2
-# robot.moveanchor()
+# # robot.moveanchor()
 # robot.translateglobcm(z=(newt[2]*100)-15)#+11   put positive 15 for safety buffer  in rightside up, -15 for upside down
 # robot.moveanchor()
 
@@ -494,7 +481,7 @@ To flip rightside up/ upside down
 """
 
 #######################################################################
-# df = capturerecord(robot,camera,conetype,df)
+df = capturerecord(robot,camera,conetype,df)
 
 
 #%%capture images

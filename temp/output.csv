@@ -1,0 +1,2 @@
+Cycle,Cone,RGBname,DEPTHname,RGBD,Pose,RelPose,Theta
+1,C12,rgb\0001.png,depth\0001.png,npy\0001,[0.3182 0.3182 0.19  ],[0.40774 0.      0.37568],"[0.0, -0.39951436643965776, 0.7853982267948966]"

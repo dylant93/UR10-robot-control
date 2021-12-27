@@ -26,6 +26,7 @@ class mykinectazure():
 
 
     def __init__(self, connection = True, res = 1, namecounter = 0):
+        
         self.k4a = PyK4A(Config(color_resolution=pyk4a.ColorResolution.RES_3072P,
                     camera_fps=pyk4a.FPS.FPS_15,           
                     depth_mode=pyk4a.DepthMode.NFOV_UNBINNED,))  # If using WFOV, camera_FPS must be specified, default 30fps will not work
@@ -142,38 +143,7 @@ class mykinectazure():
         self.updatecounter()
         return
     
-# import time
-# camera = mykinectazure()
-# camera.getintrinsics("config.json")
-# camera.start()
-# a = camera.calibration()
 
-# camera.namecounter = 6
-
-# camera.cap()   
-# camera.saveupdate()
-# print("next")
-# time.sleep(1)
-
-# camera.cap()   
-# camera.saveupdate()
-# print("next")
-# time.sleep(1)
-
-# camera.cap()   
-# camera.saveupdate()
-# print("next")
-# time.sleep(1)
-
-# camera.cap()   
-# camera.saveupdate()
-# print("next")
-# time.sleep(1)
-
-# camera.cap()   
-# camera.saveupdate()
-# print("next")
-# time.sleep(1)
 
         
         

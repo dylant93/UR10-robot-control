@@ -2,7 +2,7 @@
 """
 Created on Tue Feb 23 22:48:43 2021
 
-@author: holy_
+@author: Dylan Tan
 """
 # from math import pi as pi
 import math
