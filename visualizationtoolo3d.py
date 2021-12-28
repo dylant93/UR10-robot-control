@@ -25,10 +25,10 @@ class visualize():
         self.source = o3d.io.read_point_cloud(cadpath)
         self.target = self.createtarget()
         self.axis = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.15, origin=[0, 0, 0])  
-        self.userinput_tmat = np.array([[-0.28652734, -0.03644933, -0.95737847,  0.11881606],
-                                        [-0.35311466,  0.9329455 ,  0.07016219,  0.01757124],
-                                        [ 0.89062457,  0.35816775, -0.28018519, -0.39194853],
-                                        [ 0.        ,  0.        ,  0.        ,  1.        ]])
+        self.userinput_tmat = np.array([[-0.1027032 , -0.0809252 ,  0.99141473,  0.08197522],
+                  [ 0.54766182, -0.83661997, -0.01155623, -0.06576173],
+                  [ 0.83037256,  0.54177314,  0.13024319, -0.51703579],
+                  [ 0.        ,  0.        ,  0.        ,  1.        ]])
 
         #np.eye(4)
         
