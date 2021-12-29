@@ -254,14 +254,14 @@ def change_ref_frame_trans(anchor):
 # print(t2)
 
     #Upsidedown
-    # t1 = rotateonspot(np.eye(3),np.array([0,0,1]),270) #270
-# print(t1)
-    # t2 = rotateonspot(np.eye(3),np.array([0,1,0]),120)
-    
-    #newest
-    t1 = rotateonspot(np.eye(3),np.array([0,0,1]),90) #270
+    t1 = rotateonspot(np.eye(3),np.array([0,0,1]),270) #270
 # print(t1)
     t2 = rotateonspot(np.eye(3),np.array([0,1,0]),120)
+    
+    #newest
+    # t1 = rotateonspot(np.eye(3),np.array([0,0,1]),90) #270
+# print(t1)
+    # t2 = rotateonspot(np.eye(3),np.array([0,1,0]),120)
     
     
     t = np.matmul(t1,t2) 
@@ -310,13 +310,13 @@ def rotateoncamera(axischoice, theta):
     # xaxis = [0,-1,0]
     # yaxis =  [0.5,0,0.866]   #robot.anchor[9:]
     
-    #Upsidedown
-    # xaxis = [0,1,0]
-    # yaxis =  [0.5,0,-0.866]   #robot.anchor[9:]  
+    # Upsidedown
+    xaxis = [0,1,0]
+    yaxis =  [0.5,0,-0.866]   #robot.anchor[9:]  
     
     #newest
-    xaxis = [0,-1,0]
-    yaxis =  [-0.5,0,0.866]   #robot.anchor[9:]  
+    # xaxis = [0,-1,0]
+    # yaxis =  [-0.5,0,0.866]   #robot.anchor[9:]  
     
     zaxis = np.cross(xaxis,yaxis)
     vertical = np.array([0,0,1])
@@ -374,23 +374,27 @@ with open('final_tmat.p', 'rb') as f:
 
 
 
-# tmat_1 = dict_tmat_pred
+tmat_1 = dict_tmat_pred
 
+originalfrommanual= np.array([[ 0.07323626, -0.11282016,  0.99091274,  0.08893207],
+                              [ 0.50497475, -0.85260688, -0.13439498, -0.09157191],
+                              [ 0.86002148,  0.5102285 , -0.00547041, -0.57034364],
+                              [ 0.        ,  0.        ,  0.        ,  1.        ]])
 
-originalfrommanual = np.array([[-0.1027032 , -0.0809252 ,  0.99141473,  0.08197522],
-                  [ 0.54766182, -0.83661997, -0.01155623, -0.06576173],
-                  [ 0.83037256,  0.54177314,  0.13024319, -0.51703579],
-                  [ 0.        ,  0.        ,  0.        ,  1.        ]])
+# originalfrommanual = np.array([[-0.1027032 , -0.0809252 ,  0.99141473,  0.08197522],
+#                   [ 0.54766182, -0.83661997, -0.01155623, -0.06576173],
+#                   [ 0.83037256,  0.54177314,  0.13024319, -0.51703579],
+#                   [ 0.        ,  0.        ,  0.        ,  1.        ]])
 
 flipfrommanual = np.array([[-0.09830629, -0.07979512,  0.99195192,  0.08181951],
                            [-0.54442672,  0.83869957,  0.01351231,  0.06561915],
                            [-0.83302786, -0.53871679, -0.12589204,  0.51708933],
                            [ 0.        ,  0.        ,  0.        ,  1.        ]])
 
-tmat_1 = originalfrommanual
+# tmat_1 = originalfrommanual
 
-flip = np.array([[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]])
-tmat_1 = np.matmul(tmat_1,flip)
+# flip = np.array([[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]])
+# tmat_1 = np.matmul(tmat_1,flip)
 
 tmat1trans = tmat_1[0:3,3]
 tmat_1rot = tmat_1[0:3,0:3]
@@ -413,16 +417,16 @@ print("Camera trans: ",Translation)
 # robot.translateglobcm(x=20)
 # robot.translateglobcm(z=-7)
 
-# robot.rotateonspot(thetaV=-30) #try rotate on camera instead
-# robot.translateglobcm(x=4.5) #originially 3.9
-# robot.translateglobcm(z=-26.7)
-# robot.moveanchor()
-
-#right side up mount
 robot.rotateonspot(thetaV=-30) #try rotate on camera instead
 robot.translateglobcm(x=4.5) #originially 3.9
 robot.translateglobcm(z=-26.7)
 # robot.moveanchor()
+
+#right side up mount
+# robot.rotateonspot(thetaV=-30) #try rotate on camera instead
+# robot.translateglobcm(x=4.5) #originially 3.9
+# robot.translateglobcm(z=-26.7)
+# # robot.moveanchor()
 
 drefframeT=change_ref_frame_trans(robot.anchor)
 newt = np.matmul(Translation,drefframeT)
@@ -443,12 +447,12 @@ print("Robot trans: ",newt)
 # robot.moveanchor()
 
 # # upsidedown
-# robot.translateglobcm(y=newt[1]*100+4) #for rightupsideup is -2
-# robot.moveanchor()
-# robot.translateglobcm(x=(newt[0]*100)) # forrightsideup is-2
-# robot.moveanchor()
-# robot.translateglobcm(z=(newt[2]*100)-15)#+11   put positive 15 for safety buffer  in rightside up, -15 for upside down
-# robot.moveanchor()
+robot.translateglobcm(y=newt[1]*100+4) #for rightupsideup is -2
+robot.moveanchor()
+robot.translateglobcm(x=(newt[0]*100)) # forrightsideup is-2
+robot.moveanchor()
+robot.translateglobcm(z=(newt[2]*100)-15)#+11   put positive 15 for safety buffer  in rightside up, -15 for upside down
+robot.moveanchor()
 
 #newest
 # robot.translateglobcm(y=newt[1]*100-4) #for rightupsideup is -2
@@ -468,20 +472,20 @@ print("Robot trans: ",newt)
 
 ########################################################################
 
-# rpyorientation = rmat2rpy(Rotation)/3.142*180
-# print("RPY for final: ", rpyorientation)
+rpyorientation = rmat2rpy(Rotation)/3.142*180
+print("RPY for final: ", rpyorientation)
 
-# xaxis = [0,-1,0]
-# yaxis =  robot.anchor[9:]
-# zaxis = np.cross(xaxis,yaxis)
+xaxis = [0,-1,0]
+yaxis =  robot.anchor[9:]
+zaxis = np.cross(xaxis,yaxis)
 
-# rotateoncamera(0,rpyorientation[0])
-# rotateoncamera(1,rpyorientation[1])
-# rotateoncamera(2,rpyorientation[2])
+rotateoncamera(0,rpyorientation[0])
+rotateoncamera(1,rpyorientation[1])
+rotateoncamera(2,rpyorientation[2])
 
-# # # """"Rightside up/ upside down read below properly"""
-# rotateoncamera(3,90) 
-# robot.moveanchor()
+# # """"Rightside up/ upside down read below properly"""
+rotateoncamera(3,-90) 
+robot.moveanchor()
 ###############################################################################
 # # """ For original left images, 90 is correct, for flipped, take note it will likely be -90
 # """ For upside down: -90 for L and 90 for flipped
@@ -505,7 +509,7 @@ To flip rightside up/ upside down
 
 #######################################################################
 # df = capturerecord(robot,camera,conetype,df)
-
+# 
 
 #%%capture images
 
