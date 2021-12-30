@@ -9,7 +9,7 @@ import socket
 import time
 from math import pi as pi
 import numpy as np
-from geometry import rpy2rot, unit
+from geometry import rpy2rot, unit, getRmatrix, rmat2rpy
 
 
 """The robot is offcenter adjusted by -60 in the x axis and 136 in the z axis for upside orientation
@@ -158,25 +158,43 @@ class robot():
 
         Parameters
         ----------
-        thetaH : TYPE, optional
-            DESCRIPTION. The default is 0.
-        thetaV : TYPE, optional
-            DESCRIPTION. The default is 0.
-
+        thetaH : TYPE, int
+            DESCRIPTION. The default is 0. Degrees to rotate horizontally (around verical axis)
+            
+        thetaV : TYPE, int
+            DESCRIPTION. The default is 0. Degrees to rotate vertically (around horizontal axis)
+            
+    
         Returns
-        -------
         None.
+        
+        Take note that This function rotates about home point. 
 
         """
         
         identity = np.eye(3)
+        # rotation_matrix = getRmatrix(self.anchor[6],self.anchor[7],self.anchor[8])
+        # rotation_matrix[0:,0] = rotation_matrix[0:,0]*-1
+        # print("vert: ",rotation_matrix[0:,0])
+        # print("horizontal: ",rotation_matrix[0:,1])
+        # print("normal: ", rotation_matrix[0:,2] )
+        # print(rotation_matrix,self.anchor[9:])
         
         if(thetaH!=0):
-            normal = [self.home[0]-self.anchor[0],self.home[1]-self.anchor[1],self.home[2]-self.anchor[2]]
-            unitnormal = unit(np.array(normal))
+            # normal = [self.home[0]-self.anchor[0],self.home[1]-self.anchor[1],self.home[2]-self.anchor[2]]
+            # unitnormal = unit(np.array(normal))
+            rotation_matrix = getRmatrix(self.anchor[6],self.anchor[7],self.anchor[8])
+            newnorm = rotation_matrix[0:,2]
+            # newvert = rotation_matrix[0:,0]
+            
+            newnorm = np.squeeze(np.asarray(newnorm))
+            # newvert = np.squeeze(np.asarray(newvert))
+            
+            
             vaxis = self.anchor[9:]
             zaxis = np.array([0,0,1]) #using z axis
-            haxis = np.cross(zaxis,unitnormal)
+            # haxis = np.cross(zaxis,unitnormal)
+            haxis = np.cross(vaxis,newnorm)
             
             Hrad = (pi*thetaH)/180
             
@@ -193,11 +211,16 @@ class robot():
     
         
         if(thetaV!=0):
-            normal = [self.home[0]-self.anchor[0],self.home[1]-self.anchor[1],self.home[2]-self.anchor[2]]
-            unitnormal = unit(np.array(normal))
-            vaxis = self.anchor[9:]
-            haxis = np.cross(vaxis,unitnormal)
+            # normal = [self.home[0]-self.anchor[0],self.home[1]-self.anchor[1],self.home[2]-self.anchor[2]]
+            # unitnormal = unit(np.array(normal))
+            
+            rotation_matrix = getRmatrix(self.anchor[6],self.anchor[7],self.anchor[8])
+            newnorm = rotation_matrix[0:,2]
+            newnorm = np.squeeze(np.asarray(newnorm))
 
+            vaxis = self.anchor[9:]
+            # haxis = np.cross(vaxis,unitnormal)
+            haxis = np.cross(vaxis,newnorm)
             Vrad = (pi*thetaV)/180
             W = np.array([[0, -haxis[2], haxis[1]],
                        [haxis[2], 0, -haxis[0]],
@@ -205,6 +228,7 @@ class robot():
         
             rod = identity + np.sin(Vrad)*W + (1-np.cos(Vrad)) * np.matmul(W,W)
             newv = np.matmul(rod,np.array(vaxis))
+            
             self.anchor[9:] = newv
             self.anchor[7]+=Vrad
             self.anchor[3:6] = rpy2rot(self.anchor)
@@ -244,7 +268,9 @@ class robot():
         """
 
         identity = np.eye(3)
-
+        
+        
+  
         if(thetaH!=0):
             normal = [self.home[0]-self.anchor[0],self.home[1]-self.anchor[1],self.home[2]-self.anchor[2]]
             unitnormal = unit(np.array(normal))        
@@ -268,6 +294,7 @@ class robot():
             self.anchor[:3] = list(output)
             newv = np.matmul(rod,vaxis)
             
+            
             self.anchor[9:] = newv
             self.anchor[8] +=Hrad
             self.anchor[3:6] = rpy2rot(self.anchor)
@@ -277,6 +304,8 @@ class robot():
             unitnormal = unit(np.array(normal))
             vaxis = self.anchor[9:]
             haxis = np.cross(vaxis,unitnormal)
+            # print("rotateanchor\t\t",unitnormal)
+            
             adjusted = np.array([self.anchor[0]-self.home[0],self.anchor[1]-self.home[1],self.anchor[2]-self.home[2]])
             Vrad = (pi*thetaV)/180
             W = np.array([[0, -haxis[2], haxis[1]],
@@ -290,14 +319,29 @@ class robot():
             output[2]+=self.home[2]
             self.anchor[:3] = list(output)
             newv = np.matmul(rod,np.array(vaxis))
+            
+            
             self.anchor[9:] = newv
             self.anchor[7]+=Vrad
             self.anchor[3:6] = rpy2rot(self.anchor)
+            
+            
+            
+            # rotation_matrix = getRmatrix(self.anchor[6],self.anchor[7],self.anchor[8])
+            # rotation_matrix[0:,0] = rotation_matrix[0:,0]*-1
+            # normal = [self.home[0]-self.anchor[0],self.home[1]-self.anchor[1],self.home[2]-self.anchor[2]]
+            # print(rotation_matrix,self.anchor[9:],unit(np.array(normal)),np.cross(self.anchor[9:],unitnormal))
+            # print("vert: ",rotation_matrix[0:,0])
+            # print("horizontal: ",rotation_matrix[0:,1])
+
 
         return 
     #%% 
     """
     These functions are no longer relavent but kept here for legacy purposes.
+    These functions are used to perform a sequence for data collection where the anchor rotates at a fixed radius around the object
+    and the flyer translates in a 2d box to capture data for each angle of the anchor
+    Hence the name anchor and flyer.
     """
     
     def gettranslatebox(self, interval = 10, dim = 0.5): #get translation box from anchor. This will generate a list of positions based on the dimension

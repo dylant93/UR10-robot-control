@@ -94,6 +94,9 @@ def rpy2rot(vector):
     """
     Takes in anchor vector of length 9
     Roll, pitch, yaw to rotation vector (UR10 version)
+    
+    returns
+    (3,) quaternion in ur10 adjusted magnitude
     """
     roll = vector[6]
     pitch = vector[7]

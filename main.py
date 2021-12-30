@@ -4,10 +4,8 @@ Created on Wed Feb 17 22:38:50 2021
 
 @author: Dylan Tan
 """
-# from PIL import Image
+
 import numpy as np
-# import pyk4a
-# from pyk4a import Config, PyK4A
 import pandas as pd
 import math
 from robot import robot
@@ -23,9 +21,11 @@ import time
 # if not specificed, color is BGRA 720p
 
 def calibrate(robot):
-    # calibrate
+    """# calibrate
     # 9cm on length +5cm for safety, = 14cm
     # 8.9cm for width +5cm for safety = 13.9cm
+    """
+    
     robot.wtrJ()
     robot.rotateanchor(45,0)
     robot.moveanchor(0.3,0.3,0,10)
@@ -138,34 +138,6 @@ def task3(robot,camera,df):
                     
     robot.wtrJ()
     return df
-
-def testboundaries(robot,camera,df):
-    # robot.rotateanchor(40,0)
-    # robot.moveanchor(t=6)
-    # box = robot.gettranslatebox()
-
-    # robot.wtr(box[10])
-    # df = capturerecord(robot,camera,conetype,df)
-    # robot.wtr(box[54])
-    # df = capturerecord(robot,camera,conetype,df)
-    
-    robot.rotateanchor(60,60)
-    robot.printanchor()
-    robot.moveanchor(t=6)
-    box = robot.gettranslatebox()
-
-    robot.wtr(box[10],0.3,0.3,t=9)
-    # df = capturerecord(robot,camera,conetype,df)
-    robot.wtr(box[54],0.3,0.3,t=9)
-    # df = capturerecord(robot,camera,conetype,df)
-    print(box[54])
-    # wtr(robot,li[0])
-# wtr(robot,li[10])
-# wtr(robot,li[44])
-# wtr(robot,li[54])
-    
-    
-    return df
     
 
     
@@ -238,12 +210,11 @@ def change_ref_frame(home,anchor): # change reference frame creff for relative
 
 
 def change_ref_frame_trans(anchor):
-    #this part is fixed. This is arm wrt the camera.  
-    #we get instructions from camera, hence need to convert to global arm instruction
-    # x = np.array([0,-1,0]) 
-    # y = np.array([-0.5,0,-0.8660254037]) 
-    # z = np.array([0.8660254037,0,-0.5]) #np.array([1,0,0]) #i know that its the reverse 30 degree, hence i take the last 3 and flip only the x to -ve
-
+    """"
+    Change reference frame for translation of camera axis to robot axis
+    This does a 2 simple rotations of camera axis to fit the robot axis exactly.
+    """
+    
     #this method use 
     
     
@@ -267,42 +238,30 @@ def change_ref_frame_trans(anchor):
     t = np.matmul(t1,t2) 
 
     
-    # eye = np.eye(3)
-    
-    # refmat = np.array([[np.dot(x,eye[i]) for i in range(3)],
-    #                     [np.dot(y,eye[i]) for i in range(3)],
-    #                     [np.dot(z,eye[i]) for i in range(3)]])
-    # print(refmat)
-    
-    # return refmat
+
     
     return t
-
-# def change_ref_frame_rot(anchor):
-#     #this part is fixed. This is arm wrt the camera.  
-#     #we get instructions from camera, hence need to convert to global arm instruction
-#     x = np.array([0,-1,0])  *-1
-#     y = np.array([-0.5,0,-0.8660254037]) *-1
-#     z = np.array([0.8660254037,0,-0.5]) #np.array([1,0,0]) #i know that its the reverse 30 degree, hence i take the last 3 and flip only the x to -ve
-
-#     # x = np.array([0,-1,0])  *-1
-#     # y = np.array([0.5,0,0.8660254037]) *-1
-#     # z = np.array([-0.8660254037,0,0.5]) *1
-
-#     # x = np.array([0,-0.5,0.866])
-#     # y = np.array([-1,0,0]) 
-#     # z = np.array([0.5,-0.866,0])
-    
-#     eye = np.eye(3)
-    
-#     refmat = np.array([[np.dot(x,eye[i]) for i in range(3)],
-#                         [np.dot(y,eye[i]) for i in range(3)],
-#                         [np.dot(z,eye[i]) for i in range(3)]])
-#     return refmat
 
 
     
 def rotateoncamera(axischoice, theta):
+    """
+    
+
+    Parameters
+    ----------
+    axischoice : int
+        Axis of rotation: [xaxis,yaxis,zaxis,vertical]
+        
+    theta : int
+        angle of rotation in degree. 
+
+    Returns
+    -------
+    None.
+
+    """
+    
     identity = np.eye(3)
     # camera xaxis in the robot's definition: 
     
@@ -351,14 +310,22 @@ def rotateoncamera(axischoice, theta):
     # self.anchor[3:6] = rpy2rot(self.anchor)
     return
 
+#%%
+"""
+1. Check robot connection T/F
+2. Check home distance if you need to perform fixed radial tasks and make sure that the 
+       home distance is correct to the physical location of the cone the camera will be rotating around.
+3. Check camera connection T/F
+4. Check name counter that it is 0 if you want the saving png to be 0000.png. set to 1 if you want 0001.png or
+        if you dont want to overwrite the original image.
+
+"""
 
 
 path = 'temp\\'
-#try 1536p
-robot = robot(connection=True,homedistance = 1000)
-camera = mykinectazure(connection=True,namecounter=0)
+robot = robot(connection=False,homedistance = 1000)
+camera = mykinectazure(connection=False,namecounter=0)
 camera.path = path
-# camera2 = mykinectazure(conn)
 
 df = pd.DataFrame( columns=['Cycle','Cone','RGBname', 'DEPTHname', 'RGBD', 'Pose', 'RelPose', 'Theta'])
 conetype = "C12"
@@ -372,7 +339,18 @@ import pickle
 with open('final_tmat.p', 'rb') as f: 
     dict_tmat_pred = pickle.load(f)
 
+print(robot.anchor)
+robot.printanchor()
+# rotateonspot
+# rotateanchor
+robot.rotateonspot(0,45)
+# print(robot.anchor)
+robot.rotateonspot(0,45)
+# rotateoncamera(0,45)
+robot.printanchor()
+print("ASDdddddddddddddddddddddddddddddddddddddd")
 
+# time.sleep(3)
 
 tmat_1 = dict_tmat_pred
 
