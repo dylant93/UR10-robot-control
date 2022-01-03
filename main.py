@@ -158,6 +158,30 @@ def task3(robot,camera,df):
                     
     robot.wtrJ()
     return df
+
+
+def task_collectDatabase():
+    robot.wtrJ()
+
+    robot.rotateonspot(thetaV=30)
+    robot.moveanchor()
+    robot.translateglobcm(x=20)
+    robot.moveanchor()
+    quickCapture(camera)
+    task2(robot,camera,df,interval=8 , dim=0.8)
+    print("First layer completed")
+
+    robot.translateglobcm(x=-10)
+    robot.moveanchor()
+    task2(robot,camera,df,interval=8 , dim=0.8)
+    print("Second layer completed")
+
+    robot.translateglobcm(x=-10)
+    robot.moveanchor()
+    task2(robot,camera,df,interval=8 , dim=0.8)
+    print("Task completed")
+
+    return    
     
 
 #%%    
@@ -368,34 +392,14 @@ with open('final_tmat.p', 'rb') as f:
     dict_tmat_pred = pickle.load(f)
     
 
-
 tmat_1 = dict_tmat_pred
-
-originalfrommanual= np.array([[ 0.07323626, -0.11282016,  0.99091274,  0.08893207],
-                              [ 0.50497475, -0.85260688, -0.13439498, -0.09157191],
-                              [ 0.86002148,  0.5102285 , -0.00547041, -0.57034364],
-                              [ 0.        ,  0.        ,  0.        ,  1.        ]])
-
-# originalfrommanual = np.array([[-0.1027032 , -0.0809252 ,  0.99141473,  0.08197522],
-#                   [ 0.54766182, -0.83661997, -0.01155623, -0.06576173],
-#                   [ 0.83037256,  0.54177314,  0.13024319, -0.51703579],
-#                   [ 0.        ,  0.        ,  0.        ,  1.        ]])
-
-flipfrommanual = np.array([[-0.09830629, -0.07979512,  0.99195192,  0.08181951],
-                           [-0.54442672,  0.83869957,  0.01351231,  0.06561915],
-                           [-0.83302786, -0.53871679, -0.12589204,  0.51708933],
-                           [ 0.        ,  0.        ,  0.        ,  1.        ]])
-
-# tmat_1 = originalfrommanual
 
 # flip = np.array([[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]])
 # tmat_1 = np.matmul(tmat_1,flip)
 
-tmat1trans = tmat_1[0:3,3]
-tmat_1rot = tmat_1[0:3,0:3]
+Translation = tmat_1[0:3,3]
+Rotation = tmat_1[0:3,0:3]
 
-Translation = tmat1trans
-Rotation=  tmat_1rot
 
 # robot.wtrJ()
 print("Camera trans: ",Translation)
@@ -404,8 +408,6 @@ print("Camera trans: ",Translation)
 # robot.rotateonspot(thetaV=30)
 # robot.translateglobcm(x=20)
 # robot.moveanchor()
-
-
 
 ##this is for upside down orientation
 # robot.rotateonspot(thetaV=-30)
@@ -506,56 +508,16 @@ To flip rightside up/ upside down
 # df = capturerecord(robot,camera,conetype,df)
 # 
 
-#%%capture images
+
+# %%
+"""
+Collect for database
+make sure that if cone is placed rightside up, that camera is also rightside up.
+"""
 
 
-# for j in range(15):
-#     for i in range(4):
-#         time.sleep(1)
-#         print(i)
-#     print("capturing image",j)
-#     df = capturerecord(robot,camera,conetype,df)
-#     print("Done image",j)
-    
-# time.sleep(10)
 
-#%%calibrate check
-# calibrate(robot)
-
-# robot.wtrJ()
-
-# # # robot.moveanchor()
-# robot.translateglobcm(x=70)
-# robot.moveanchor()
-# robot.translateglobcm(z=-29) 
-# robot.moveanchor()
-# time.sleep(5)
-# robot.wtrJ()
-# ##### robot.translateglobcm(y=40)
-# robot.moveanchor()
-# %% Tasks
-
-# robot.wtrJ()
-# # robot.moveanchor()
-# robot.rotateonspot(thetaV=30)
-# robot.moveanchor()
-# robot.translateglobcm(x=20)
-# robot.moveanchor()
-
-# df = capturerecord(robot,camera,conetype,df)
-
-# df = task2(robot,camera,df,interval=8 , dim=0.8)
-
-# robot.translateglobcm(x=-10)
-# robot.moveanchor()
-# df2 = task2(robot,camera,df,interval=8 , dim=0.8)
-
-# robot.translateglobcm(x=-10)
-# robot.moveanchor()
-# df3 = task2(robot,camera,df,interval=8 , dim=0.8)
-# [0.18,0.04,-0.34]
-
-df.to_csv(path+'output.csv', index = None)
+# df.to_csv(path+'output.csv', index = None)
 # # # 
 
 

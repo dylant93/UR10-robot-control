@@ -106,16 +106,12 @@ class visualize():
     
 
 
-def main():
-    cone = "F01"
+if __name__=='__main__':
+    cone = "S01"
     A = visualize('temp/','final_tmat.p','definedpcds/'+ cone +'_00adjusted.ply')
-    # A.draw_pickle_registration()
-    A.draw_userinput_registration()
+    A.draw_pickle_registration()
+    # A.draw_userinput_registration()
     print("Running")
     A.printpickle()
-    return
-
-
-if __name__=='__main__':
-    main()
+    
     

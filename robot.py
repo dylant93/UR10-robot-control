@@ -329,7 +329,6 @@ class robot():
         return 
     #%% 
     """
-    These functions are no longer relavent but kept here for legacy purposes.
     These functions are used to perform a sequence for data collection where the anchor rotates at a fixed radius around the object
     and the flyer translates in a 2d box to capture data for each angle of the anchor
     Hence the name anchor and flyer.
