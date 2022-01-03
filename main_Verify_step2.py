@@ -460,7 +460,7 @@ Go into the UR10 and remember to change the fixed axis from 60/-60mm appropriate
 
 
 path = 'temp\\'
-robot = robot(connection=True,homedistance = 1000, arm_mounted_camera = False, cameraFlip = True )
+robot = robot(connection=False,homedistance = 1000, arm_mounted_camera = False, cameraFlip = True )
 camera = mykinectazure(connection=False,namecounter=0)
 camera.path = path
 
@@ -493,7 +493,7 @@ if __name__ == '__main__':
     newt = np.matmul(Translation,drefframeT)
     print("Robot trans: ",newt)
     
-    from visualizationtoolo3d import Visualize
+    from visualization import Visualize
     cone = "S01"
     A = Visualize('temp/','final_tmat.p','definedpcds/'+ cone +'_00adjusted.ply')
     A.draw_pickle_registration()

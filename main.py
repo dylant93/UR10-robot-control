@@ -501,7 +501,7 @@ if __name__ == '__main__':
     newt = np.matmul(Translation,drefframeT)
     print("Robot trans: ",newt)
     
-    from visualizationtoolo3d import Visualize
+    from visualization import Visualize
     cone = "S01"
     A = Visualize('temp/','final_tmat.p','definedpcds/'+ cone +'_00adjusted.ply')
     A.draw_pickle_registration()
