@@ -72,7 +72,7 @@ def task(robot,camera,df,direction=1,originkeep = True):
     Direction parameter refers to either left of center or right of center. 
     1 means it wil sweep left "timestep" number of times. while -1 means it will sweep right
     """
-    
+    conetype = 'C12'
     timestep = 6
     totaldeg = 60
     interval = totaldeg / timestep
@@ -109,7 +109,7 @@ def task(robot,camera,df,direction=1,originkeep = True):
     plot3d(log)
     return df
 
-def task2(robot,camera,df,interval=10,dim=0.5):
+def task2(robot,camera,interval=10,dim=0.5):
     
     """
     A movement sequence that translates the flyer around in a box sequence where the 2D box is on the vertical and horizontal axis
@@ -121,13 +121,13 @@ def task2(robot,camera,df,interval=10,dim=0.5):
     for i in range(len(robot.translatebox)):
         robot.translateflyer(t=0.5, t2=3, interval=8)
         robot.printflyer()
-        df = capturerecord(robot,camera,conetype,df)
-        if i==35: return df
+        quickCapture(camera)
+        if i==35: return
 
 
-    return df
+    return
 
-def rotateMove(robot,df, h, v,t=6):
+def rotateMove(robot,df,conetype, h, v,t=6):
     robot.rotateanchor(h,v)
     robot.moveanchor(t=t)
     robot.printanchor()
@@ -140,13 +140,15 @@ def task3(robot,camera,df):
     This is similar to task 1, but it sweeps from left to right in 12 different postions (task 1 is only 6 positions from the center)
     Make sure that home is in robot.py is correctly specified and that the cone is calibrated corrected to the home position
     """
+    
+    conetype = "C12"
     timestep = 12
     totaldeg = 120
     interval = totaldeg / timestep
-    df = rotateMove(robot,df,60,0)
+    df = rotateMove(robot,df,conetype,60,0)
     for i in range(6):
         for j in range(timestep):
-            df = rotateMove(robot,df,-interval,0,t=3)
+            df = rotateMove(robot,df,conetype,-interval,0,t=3)
             if(j == (timestep/2)-2):
                 robot.wtrJ()
         robot.wtrJ()
@@ -154,7 +156,7 @@ def task3(robot,camera,df):
             robot.wtrJ()
             return df
         else:
-            df = rotateMove(robot,df,120,10)
+            df = rotateMove(robot,df,conetype,120,10)
                     
     robot.wtrJ()
     return df
@@ -166,6 +168,7 @@ def task_collectDatabase():
     make sure that if cone is placed rightside up, that camera is also rightside up.
     This Task requires you to mount the camera on the arm. If not. Whats the point?
     """
+    df = pd.DataFrame( columns=['Cycle','Cone','RGBname', 'DEPTHname', 'RGBD', 'Pose', 'RelPose', 'Theta'])
     
     robot.wtrJ()
 
@@ -174,7 +177,7 @@ def task_collectDatabase():
     robot.translateglobcm(x=20)
     robot.moveanchor()
     quickCapture(camera)
-    task2(robot,camera,df,interval=8 , dim=0.8)
+    task2(robot,camera,interval=8 , dim=0.8)
     print("First layer completed")
 
     robot.translateglobcm(x=-10)
@@ -184,7 +187,7 @@ def task_collectDatabase():
 
     robot.translateglobcm(x=-10)
     robot.moveanchor()
-    task2(robot,camera,df,interval=8 , dim=0.8)
+    task2(robot,camera,interval=8 , dim=0.8)
     print("Task completed")
 
     return    
@@ -304,7 +307,7 @@ def change_ref_frame_trans(anchor):
 
 
     
-def rotateoncamera(axischoice, theta):
+def rotateoncamera(camera_orientation, axischoice, theta):
     """
     
 
@@ -320,39 +323,31 @@ def rotateoncamera(axischoice, theta):
 
     """
     
-    identity = np.eye(3)
     # camera xaxis in the robot's definition: 
+    if camera_orientation == 0:
+    #Original rightside up X and Y axis arm mounted
+        xaxis = [0,-1,0]
+        yaxis =  [0.5,0,0.866]   
     
-    #Original rightside up X and Y axis
-    # xaxis = [0,-1,0]
-    # yaxis =  [0.5,0,0.866]   #robot.anchor[9:]
+    if camera_orientation == 1:
+    # Upsidedown metal profile mounted
+        xaxis = [0,1,0]
+        yaxis =  [0.5,0,-0.866]  
     
-    # Upsidedown
-    xaxis = [0,1,0]
-    yaxis =  [0.5,0,-0.866]   #robot.anchor[9:]  
-    
-    #newest
-    # xaxis = [0,-1,0]
-    # yaxis =  [-0.5,0,0.866]   #robot.anchor[9:]  
+    if camera_orientation == 2:
+    # rightside up metal profile mounted
+        xaxis = [0,-1,0]
+        yaxis =  [-0.5,0,0.866]  
     
     zaxis = np.cross(xaxis,yaxis)
     vertical = np.array([0,0,1])
+    
+    #This part is broken like this to dissect the rotation into 3 steps for easier troubleshooting
     chosenaxis = [xaxis,yaxis,zaxis,vertical]
     
     currentrotatin = getRmatrix(robot.anchor[6],robot.anchor[7],robot.anchor[8])
     
-    
-    # Hrad = (3.142*theta)/180
-    
     axis = chosenaxis[axischoice]
-    
-    # W = np.array([[0, -axis[2], axis[1]],
-    #            [axis[2], 0, -axis[0]],
-    #            [-axis[1], axis[0], 0]])
-
-    # rod = identity + np.sin(Hrad)*W + (1-np.cos(Hrad)) * np.matmul(W,W)
-    # newv = np.matmul(rod,currentrotatin)
-    
     newv = rotateonaxis(currentrotatin,axis,theta)
     
     robot.anchor[3:6] = rmat2rot(newv)
@@ -381,10 +376,10 @@ robot = robot(connection=True,homedistance = 1000, arm_mounted_camera = False, c
 camera = mykinectazure(connection=False,namecounter=0)
 camera.path = path
 
-df = pd.DataFrame( columns=['Cycle','Cone','RGBname', 'DEPTHname', 'RGBD', 'Pose', 'RelPose', 'Theta'])
-conetype = "C12"
+
 
 camera_orientation_list = {'rightsideup_arm':0,'upsidedown_mounted':1, 'rightsideup_mounted':2}
+# rightside up and mounted onto the arm, upside down and mounted onto the profile, ridesideup and mounted onto the profile
 camera_orientation = camera_orientation_list['upsidedown_mounted']
 
 
@@ -441,13 +436,16 @@ print("Robot trans: ",newt)
 
 # move translate, -2 to get accurate results
 
-#rightsideup
-# robot.translateglobcm(y=newt[1]*100-2) #for rightupsideup is -2
-# robot.moveanchor()
-# robot.translateglobcm(x=(newt[0]*100)-2) # forrightsideup is-2
-# robot.moveanchor()
-# robot.translateglobcm(z=(newt[2]*100)+15)#+11   put positive 15 for safety buffer  in rightside up, -15 for upside down
-# robot.moveanchor()
+def translate_arm_task():
+    
+
+    #rightsideup
+    robot.translateglobcm(y=newt[1]*100-2) #for rightupsideup is -2
+    robot.moveanchor()
+    robot.translateglobcm(x=(newt[0]*100)-2) # forrightsideup is-2
+    robot.moveanchor()
+    robot.translateglobcm(z=(newt[2]*100)+15)#+11   put positive 15 for safety buffer  in rightside up, -15 for upside down
+    robot.moveanchor()
 
 # # upsidedown
 # robot.translateglobcm(y=newt[1]*100+4) #for rightupsideup is -2
@@ -465,39 +463,38 @@ print("Robot trans: ",newt)
 # robot.translateglobcm(z=(newt[2]*100)-15)#+11   put positive 15 for safety buffer  in rightside up, -15 for upside down
 # robot.moveanchor()
 
+    return
+
 
 
 
 #%% rotation part
 
-############## rout = np.matmul(drefframeT.transpose(),Rotation)
-############## Rotation = np.matmul(getRmatrix(0,0,1.57),Rotation)
+def orientate_arm_task(rotation,camera_orientation, left):
+    rpyorientation = rmat2rpy(Rotation)/3.142*180
+    print("RPY for final: ", rpyorientation)
 
-########################################################################
-
-rpyorientation = rmat2rpy(Rotation)/3.142*180
-print("RPY for final: ", rpyorientation)
-
-xaxis = [0,-1,0]
-yaxis =  robot.anchor[9:]
-zaxis = np.cross(xaxis,yaxis)
-
-rotateoncamera(0,rpyorientation[0])
-rotateoncamera(1,rpyorientation[1])
-rotateoncamera(2,rpyorientation[2])
+    rotateoncamera(camera_orientation,0,rpyorientation[0])
+    rotateoncamera(camera_orientation,1,rpyorientation[1])
+    rotateoncamera(camera_orientation,2,rpyorientation[2])
 
 # # """"Rightside up/ upside down read below properly"""
-rotateoncamera(3,-90) 
-robot.moveanchor()
-# ###############################################################################
-# # """ For original left images, 90 is correct, for flipped, take note it will likely be -90
-# """ For upside down: -90 for L and 90 for flipped
+    if  camera_orientation == 0 or camera_orientation == 2:
+        if left:
+            rotateoncamera(3,90)
+        else:
+            rotateoncamera(3,-90)
+            
+    if  camera_orientation == 1:
+        if left:
+            rotateoncamera(3,-90)
+        else:
+            rotateoncamera(3,90)
+   
+    robot.moveanchor()
+    return
 
 
-# # #take note that the original is 90, but after nipuni, it changed to -90 as it 
-# # seems axis definition has kinda changed"""
-
-#for newest use 90 for regular and -90 for flipped
 
 """
 To flip rightside up/ upside down
@@ -511,8 +508,7 @@ To flip rightside up/ upside down
 """
 
 #######################################################################
-# df = capturerecord(robot,camera,conetype,df)
-# 
+
 
 
 
