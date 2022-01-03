@@ -1,0 +1,20 @@
+{
+	"color_mode" : "MJPG_3072P",
+	"depth_mode" : "NFOV_UNBINNED",
+	"height" : 3072,
+	"intrinsic_matrix" : 
+	[
+		1944.4559326171875,
+		0.0,
+		0.0,
+		0.0,
+		1943.5645751953125,
+		0.0,
+		2049.344970703125,
+		1556.814453125,
+		1.0
+	],
+	"serial_number_" : "000847204612",
+	"stream_length_usec" : 5320300,
+	"width" : 4096
+}

@@ -48,12 +48,22 @@ while 1:
         break
     
     if key== ord(' '):
-        
         # img_color = capture.color
-         
+    #%%
         #Use this with image lib, its the exact one we used but its really slow
         # img_color = capture.color[:, :, 2::-1]
+        # img_deptht = capture.transformed_depth
         
+        # stringcounter = str(counter).zfill(4)
+        # rgbname = path + RGBpath+ stringcounter + ".png"
+        # DEPTHname = path + depthpath + stringcounter + ".png"
+        
+        # imc = Image.fromarray(img_color)
+        # imc.save(rgbname)
+        # imd = Image.fromarray(img_deptht)
+        # imd.save(DEPTHname)
+        
+        #%%
         #use this with cv2, stands to be tested, but is much faster
         img_color = capture.color[:,:,:3]
         img_deptht = capture.transformed_depth
@@ -63,14 +73,8 @@ while 1:
         DEPTHname = path + depthpath + stringcounter + ".png"
         
         cv2.imwrite(rgbname, img_color)
-        # imc = Image.fromarray(img_color)
-        # imc.save(rgbname)
-        
         cv2.imwrite(DEPTHname, img_deptht)
-        # imd = Image.fromarray(img_deptht)
-        # imd.save(DEPTHname)
-        
-        
+#%%        
         plt.imshow(img_deptht,cmap="nipy_spectral") # BGRA to RGB , cmap="hot"
         plt.clim(0,5000)
         plt.colorbar()
