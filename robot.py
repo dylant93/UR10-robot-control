@@ -9,7 +9,7 @@ import socket
 import time
 from math import pi as pi
 import numpy as np
-from geometry import rpy2rot, unit, getRmatrix, rmat2rpy
+from geometry import rpy2rot, unit, getRmatrix, rmat2rpy, rotateonaxis
 
 
 """The robot is offcenter adjusted by -60 in the x axis and 136 in the z axis for upside orientation
@@ -177,14 +177,15 @@ class robot():
         return normal,vert,hori
     
     
-    def rotateonspot(self,thetaH=0,thetaV=0):
+    
+    def rotateonspot_local(self,thetaH=0,thetaV=0):
         """
         
 
         Parameters
         ----------
         thetaH : TYPE, int
-            DESCRIPTION. The default is 0. Degrees to rotate horizontally (around global verical axis)
+            DESCRIPTION. The default is 0. Degrees to rotate horizontally (around local verical axis)
             
         thetaV : TYPE, int
             DESCRIPTION. The default is 0. Degrees to rotate vertically (around local horizontal axis)
@@ -193,7 +194,7 @@ class robot():
         Returns
         None.
         
-        Take note that This function rotates about home point. 
+        Take note that This function rotates about arm's origin point.
 
         """
         
@@ -201,28 +202,25 @@ class robot():
 
         
         if(thetaH!=0):
-            # normal = [self.home[0]-self.anchor[0],self.home[1]-self.anchor[1],self.home[2]-self.anchor[2]]
-            # unitnormal = unit(np.array(normal))
-            
             #you can use getaxis to get the normal and horizontal axis as well.
             rotation_matrix = getRmatrix(self.anchor[6],self.anchor[7],self.anchor[8])
             newnorm = rotation_matrix[0:,2]          
             newnorm = np.squeeze(np.asarray(newnorm))
 
-            
             vaxis = self.anchor[9:]
-            zaxis = np.array([0,0,1]) #using z axis
-            # haxis = np.cross(zaxis,unitnormal)
             haxis = np.cross(vaxis,newnorm)
+            
             
             Hrad = (pi*thetaH)/180
             
-            W = np.array([[0, -zaxis[2], zaxis[1]],
-                       [zaxis[2], 0, -zaxis[0]],
-                       [-zaxis[1], zaxis[0], 0]])
+            # W = np.array([[0, -vaxis[2], vaxis[1]],
+            #            [vaxis[2], 0, -vaxis[0]],
+            #            [-vaxis[1], vaxis[0], 0]])
         
-            rod = identity + np.sin(Hrad)*W + (1-np.cos(Hrad)) * np.matmul(W,W)
-            newv = np.matmul(rod,vaxis)
+            # rod = identity + np.sin(Hrad)*W + (1-np.cos(Hrad)) * np.matmul(W,W)
+            # newv = np.matmul(rod,vaxis)
+            
+            newv = rotateonaxis(vaxis,vaxis,thetaH)
             
             self.anchor[9:] = newv
             self.anchor[8] +=Hrad
@@ -241,6 +239,7 @@ class robot():
             # haxis = np.cross(vaxis,unitnormal)
             haxis = np.cross(vaxis,newnorm)
             Vrad = (pi*thetaV)/180
+            
             W = np.array([[0, -haxis[2], haxis[1]],
                        [haxis[2], 0, -haxis[0]],
                        [-haxis[1], haxis[0], 0]])
@@ -253,6 +252,8 @@ class robot():
             self.anchor[3:6] = rpy2rot(self.anchor)
         
         return
+    
+
     
     def translateglobcm(self,x=0,y=0,z=0):
         """

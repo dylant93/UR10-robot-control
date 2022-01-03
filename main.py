@@ -10,7 +10,7 @@ import pandas as pd
 import math
 from robot import robot
 from camera import mykinectazure
-from geometry import unit, getRmatrix, rotateonspot, rmat2rot,rmat2rpy
+from geometry import unit, getRmatrix, rotateonaxis, rmat2rot,rmat2rpy
 from plot import extractlog, plotxy, plotxz, plotyz, plot3d
 from matplotlib import pyplot as plt
 import time
@@ -225,9 +225,9 @@ def change_ref_frame_trans(anchor):
 # print(t2)
 
     #Upsidedown
-    t1 = rotateonspot(np.eye(3),np.array([0,0,1]),270) #270
+    t1 = rotateonaxis(np.eye(3),np.array([0,0,1]),270) #270
 # print(t1)
-    t2 = rotateonspot(np.eye(3),np.array([0,1,0]),120)
+    t2 = rotateonaxis(np.eye(3),np.array([0,1,0]),120)
     
     #newest
     # t1 = rotateonspot(np.eye(3),np.array([0,0,1]),90) #270
@@ -323,7 +323,7 @@ def rotateoncamera(axischoice, theta):
 
 
 path = 'temp\\'
-robot = robot(connection=False,homedistance = 1000)
+robot = robot(connection=True,homedistance = 1000)
 camera = mykinectazure(connection=False,namecounter=0)
 camera.path = path
 
@@ -338,17 +338,20 @@ import pickle
 
 with open('final_tmat.p', 'rb') as f: 
     dict_tmat_pred = pickle.load(f)
-
-print(robot.anchor)
-robot.printanchor()
-# rotateonspot
-# rotateanchor
-robot.rotateonspot(0,45)
+robot.wtrJ()
 # print(robot.anchor)
-robot.rotateonspot(0,45)
-# rotateoncamera(0,45)
+# robot.printanchor()
+# # rotateonspot
+# # rotateanchor
+# robot.rotateonspot_local(0,10)
+# robot.moveanchor()
+robot.rotateonspot_local(45,0)
+print(robot.anchor)
+robot.rotateonspot_local(45,0)
+# # rotateoncamera(0,45)
 robot.printanchor()
-print("ASDdddddddddddddddddddddddddddddddddddddd")
+robot.moveanchor()
+# print("ASDdddddddddddddddddddddddddddddddddddddd")
 
 # time.sleep(3)
 
@@ -380,7 +383,7 @@ tmat_1rot = tmat_1[0:3,0:3]
 Translation = tmat1trans
 Rotation=  tmat_1rot
 
-robot.wtrJ()
+# robot.wtrJ()
 print("Camera trans: ",Translation)
 
 ##this is for the original orientation
@@ -395,9 +398,9 @@ print("Camera trans: ",Translation)
 # robot.translateglobcm(x=20)
 # robot.translateglobcm(z=-7)
 
-robot.rotateonspot(thetaV=-30) #try rotate on camera instead
-robot.translateglobcm(x=4.5) #originially 3.9
-robot.translateglobcm(z=-26.7)
+# robot.rotateonspot(thetaV=-30) #try rotate on camera instead
+# robot.translateglobcm(x=3.4) #originially 3.9
+# robot.translateglobcm(z=-26.2)
 # robot.moveanchor()
 
 #right side up mount
@@ -425,12 +428,12 @@ print("Robot trans: ",newt)
 # robot.moveanchor()
 
 # # upsidedown
-robot.translateglobcm(y=newt[1]*100+4) #for rightupsideup is -2
-robot.moveanchor()
-robot.translateglobcm(x=(newt[0]*100)) # forrightsideup is-2
-robot.moveanchor()
-robot.translateglobcm(z=(newt[2]*100)-15)#+11   put positive 15 for safety buffer  in rightside up, -15 for upside down
-robot.moveanchor()
+# robot.translateglobcm(y=newt[1]*100+4) #for rightupsideup is -2
+# robot.moveanchor()
+# robot.translateglobcm(x=(newt[0]*100)) # forrightsideup is-2
+# robot.moveanchor()
+# robot.translateglobcm(z=(newt[2]*100)-15)#+11   put positive 15 for safety buffer  in rightside up, -15 for upside down
+# robot.moveanchor()
 
 #newest
 # robot.translateglobcm(y=newt[1]*100-4) #for rightupsideup is -2
@@ -450,21 +453,21 @@ robot.moveanchor()
 
 ########################################################################
 
-rpyorientation = rmat2rpy(Rotation)/3.142*180
-print("RPY for final: ", rpyorientation)
+# rpyorientation = rmat2rpy(Rotation)/3.142*180
+# print("RPY for final: ", rpyorientation)
 
-xaxis = [0,-1,0]
-yaxis =  robot.anchor[9:]
-zaxis = np.cross(xaxis,yaxis)
+# xaxis = [0,-1,0]
+# yaxis =  robot.anchor[9:]
+# zaxis = np.cross(xaxis,yaxis)
 
-rotateoncamera(0,rpyorientation[0])
-rotateoncamera(1,rpyorientation[1])
-rotateoncamera(2,rpyorientation[2])
+# rotateoncamera(0,rpyorientation[0])
+# rotateoncamera(1,rpyorientation[1])
+# rotateoncamera(2,rpyorientation[2])
 
-# # """"Rightside up/ upside down read below properly"""
-rotateoncamera(3,-90) 
-robot.moveanchor()
-###############################################################################
+# # # """"Rightside up/ upside down read below properly"""
+# rotateoncamera(3,-90) 
+# robot.moveanchor()
+# ###############################################################################
 # # """ For original left images, 90 is correct, for flipped, take note it will likely be -90
 # """ For upside down: -90 for L and 90 for flipped
 
