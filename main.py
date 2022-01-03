@@ -272,38 +272,33 @@ def change_ref_frame(home,anchor): # change reference frame creff for relative
 
 
 
-def change_ref_frame_trans(anchor):
+def change_ref_frame_trans(camera_orientation):
     """"
     Change reference frame for translation of camera axis to robot axis
     This does a 2 simple rotations of camera axis to fit the robot axis exactly.
+    This is hardcoded as the axis of the robot and camera should not be dynamically changing
     """
     
     #this method use 
     
-    
-    #Rightsideup
-    # t1 = rotateonspot(np.eye(3),np.array([0,0,1]),90)
-# # print(t1)
-    # t2 = rotateonspot(np.eye(3),np.array([0,1,0]),60)
-# print(t2)
+    if camera_orientation == 0:
+    #Rightsideup arm
+        t1 = rotateonaxis(np.eye(3),np.array([0,0,1]),90)
+        t2 = rotateonaxis(np.eye(3),np.array([0,1,0]),60)
 
-    #Upsidedown
-    t1 = rotateonaxis(np.eye(3),np.array([0,0,1]),270) #270
-# print(t1)
-    t2 = rotateonaxis(np.eye(3),np.array([0,1,0]),120)
-    
-    #newest
-    # t1 = rotateonspot(np.eye(3),np.array([0,0,1]),90) #270
-# print(t1)
-    # t2 = rotateonspot(np.eye(3),np.array([0,1,0]),120)
-    
-    
-    t = np.matmul(t1,t2) 
 
-    
+    elif camera_orientation == 1:
+    #Upsidedown profile
+        t1 = rotateonaxis(np.eye(3),np.array([0,0,1]),270) 
+        t2 = rotateonaxis(np.eye(3),np.array([0,1,0]),120)
 
-    
-    return t
+    elif camera_orientation == 2:    
+    #rightsideup profile
+        t1 = rotateonaxis(np.eye(3),np.array([0,0,1]),90) 
+        t2 = rotateonaxis(np.eye(3),np.array([0,1,0]),120)
+        
+    return np.matmul(t1,t2) 
+
 
 
     
@@ -359,116 +354,64 @@ def rotateoncamera(camera_orientation, axischoice, theta):
 
 #%%
 
-"""
-1. Check robot connection T/F
-2. Check home distance if you need to perform fixed radial tasks and make sure that the 
-       home distance is correct to the physical location of the cone the camera will be rotating around.
-3. Check camera connection T/F
-4. Check name counter that it is 0 if you want the saving png to be 0000.png. set to 1 if you want 0001.png or
-        if you dont want to overwrite the original image.
-5. Make sure that the camera orientation is selected correctly
+def initialSetup(camera_orientation):
+    """
+    Take note only camera orientation 1 is set up. These distances will change when you alter the mount setup.
+    """
+##this is for the original orientation on arm
+    if camera_orientation == 0:
+        robot.rotateonspot(thetaV=30)
+        robot.translateglobcm(x=20)
+        # robot.moveanchor()
+        return
 
-"""
+    #upside down profile mounted
+    elif camera_orientation == 1:
+        robot.rotateonspot_local(thetaV=-30) #try rotate on camera instead
+        robot.translateglobcm(x=3.4) #originially 3.9
+        robot.translateglobcm(z=-26.2)
+        # robot.moveanchor()
+        return
 
+    #right side up mount profile
+    elif camera_orientation == 2:
+        robot.rotateonspot(thetaV=-30) #try rotate on camera instead
+        robot.translateglobcm(x=4.5) #originially 3.9
+        robot.translateglobcm(z=-26.7)
+        # robot.moveanchor()
+        return
 
-path = 'temp\\'
-robot = robot(connection=True,homedistance = 1000, arm_mounted_camera = False, cameraFlip = True )
-camera = mykinectazure(connection=False,namecounter=0)
-camera.path = path
-
-
-
-camera_orientation_list = {'rightsideup_arm':0,'upsidedown_mounted':1, 'rightsideup_mounted':2}
-# rightside up and mounted onto the arm, upside down and mounted onto the profile, ridesideup and mounted onto the profile
-camera_orientation = camera_orientation_list['upsidedown_mounted']
-
-
-
-#%% this is moving part
-
-
-
-
-with open('final_tmat.p', 'rb') as f: 
-    dict_tmat_pred = pickle.load(f)
+def translate_arm_task(camera_orientation):
     
+    safety = 15
+    #rightsideup arm mounted
+    if camera_orientation == 0:
+        robot.translateglobcm(y=newt[1]*100-2) #for rightupsideup is -2
+        robot.moveanchor()
+        robot.translateglobcm(x=(newt[0]*100)-2) # forrightsideup is-2
+        robot.moveanchor()
+        robot.translateglobcm(z=(newt[2]*100)+safety)#+11   put positive 15 for safety buffer  in rightside up, -15 for upside down
+        robot.moveanchor()
 
-tmat_1 = dict_tmat_pred
+# # upsidedown mounted on profile
+    elif camera_orientation == 1:
+        robot.translateglobcm(y=newt[1]*100) #for rightupsideup is -2
+        robot.moveanchor()
+        robot.translateglobcm(x=(newt[0]*100)) # forrightsideup is-2
+        robot.moveanchor()
+        robot.translateglobcm(z=(newt[2]*100)-safety)#+11   put positive 15 for safety buffer  in rightside up, -15 for upside down
+        robot.moveanchor()
 
-# flip = np.array([[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]])
-# tmat_1 = np.matmul(tmat_1,flip)
-
-Translation = tmat_1[0:3,3]
-Rotation = tmat_1[0:3,0:3]
-
-
-robot.wtrJ()
-print("Camera trans: ",Translation)
-
-##this is for the original orientation
-# robot.rotateonspot(thetaV=30)
-# robot.translateglobcm(x=20)
-# robot.moveanchor()
-
-##this is for upside down orientation
-# robot.rotateonspot(thetaV=-30)
-# robot.translateglobcm(x=20)
-# robot.translateglobcm(z=-7)
-
-robot.rotateonspot_local(thetaV=-30) #try rotate on camera instead
-robot.translateglobcm(x=3.4) #originially 3.9
-robot.translateglobcm(z=-26.2)
-robot.moveanchor()
-
-#right side up mount
-# robot.rotateonspot(thetaV=-30) #try rotate on camera instead
-# robot.translateglobcm(x=4.5) #originially 3.9
-# robot.translateglobcm(z=-26.7)
-# # robot.moveanchor()
-
-drefframeT=change_ref_frame_trans(robot.anchor)
-newt = np.matmul(Translation,drefframeT)
-print("Robot trans: ",newt)
-
-
-#########3 xsafety = 5
-########## angle = 3.142*30/180
-
-# move translate, -2 to get accurate results
-
-def translate_arm_task():
-    
-
-    #rightsideup
-    robot.translateglobcm(y=newt[1]*100-2) #for rightupsideup is -2
-    robot.moveanchor()
-    robot.translateglobcm(x=(newt[0]*100)-2) # forrightsideup is-2
-    robot.moveanchor()
-    robot.translateglobcm(z=(newt[2]*100)+15)#+11   put positive 15 for safety buffer  in rightside up, -15 for upside down
-    robot.moveanchor()
-
-# # upsidedown
-# robot.translateglobcm(y=newt[1]*100+4) #for rightupsideup is -2
-# robot.moveanchor()
-# robot.translateglobcm(x=(newt[0]*100)) # forrightsideup is-2
-# robot.moveanchor()
-# robot.translateglobcm(z=(newt[2]*100)-15)#+11   put positive 15 for safety buffer  in rightside up, -15 for upside down
-# robot.moveanchor()
-
-#newest
-# robot.translateglobcm(y=newt[1]*100-4) #for rightupsideup is -2
-# robot.moveanchor()
-# robot.translateglobcm(x=(newt[0]*100)) # forrightsideup is-2
-# robot.moveanchor()
-# robot.translateglobcm(z=(newt[2]*100)-15)#+11   put positive 15 for safety buffer  in rightside up, -15 for upside down
-# robot.moveanchor()
+#rightsideup mounted profile
+    elif camera_orientation == 2:
+        robot.translateglobcm(y=newt[1]*100-4) #for rightupsideup is -2
+        robot.moveanchor()
+        robot.translateglobcm(x=(newt[0]*100)) # forrightsideup is-2
+        robot.moveanchor()
+        robot.translateglobcm(z=(newt[2]*100)-safety)#+11   put positive 15 for safety buffer  in rightside up, -15 for upside down
+        robot.moveanchor()
 
     return
-
-
-
-
-#%% rotation part
 
 def orientate_arm_task(rotation,camera_orientation, left):
     rpyorientation = rmat2rpy(Rotation)/3.142*180
@@ -485,7 +428,7 @@ def orientate_arm_task(rotation,camera_orientation, left):
         else:
             rotateoncamera(3,-90)
             
-    if  camera_orientation == 1:
+    elif  camera_orientation == 1:
         if left:
             rotateoncamera(3,-90)
         else:
@@ -496,31 +439,73 @@ def orientate_arm_task(rotation,camera_orientation, left):
 
 
 
+
+
+#%%
 """
-To flip rightside up/ upside down
-0. Go into the UR10 and remember to change the fixed axis from 60/-60mm appropriately
-1. after print("Camera trans: ",Translation) select correct orientation
-2. In the translation area a few lines down from that select appropriately as well
-3. In the rotation area a few lines down from that read the 90/-90 part properly
-4. Go to rotateoncamera function and change the axis appropriately
-5. Go to crefftrans function and change the rotations inside appropriately as well
+1. Check robot connection T/F
+2. Check home distance if you need to perform fixed radial tasks and make sure that the 
+       home distance is correct to the physical location of the cone the camera will be rotating around.
+3. Check camera connection T/F
+4. Check name counter that it is 0 if you want the saving png to be 0000.png. set to 1 if you want 0001.png or
+        if you dont want to overwrite the original image.
+5. Make sure that the camera orientation AND arm mount is selected correctly
+
+If you are mounting the camera, remember to appropriately offset the origin on the UR10 side
+Go into the UR10 and remember to change the fixed axis from 60/-60mm appropriately (with camera)
+
+
 
 """
 
-#######################################################################
+
+path = 'temp\\'
+robot = robot(connection=True,homedistance = 1000, arm_mounted_camera = False, cameraFlip = True )
+camera = mykinectazure(connection=False,namecounter=0)
+camera.path = path
+
+
+camera_orientation_list = {'rightsideup_arm':0,'upsidedown_mounted':1, 'rightsideup_mounted':2}
+# rightside up and mounted onto the arm, upside down and mounted onto the profile, ridesideup and mounted onto the profile
+camera_orientation = camera_orientation_list['upsidedown_mounted']
 
 
 
+#%% Execution
 
-
-
-
-# df.to_csv(path+'output.csv', index = None)
-# # # 
-
-
-
-print("End")
+if __name__ == '__main__':
+    with open('final_tmat.p', 'rb') as f: 
+        dict_tmat_pred = pickle.load(f)
+        
+    
+    tmat_1 = dict_tmat_pred
+    
+    #FYI: i left this here just in case
+    # flip = np.array([[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]])
+    # tmat_1 = np.matmul(tmat_1,flip)
+    
+    Translation = tmat_1[0:3,3]
+    Rotation = tmat_1[0:3,0:3]
+    print("Camera trans: ",Translation)
+    
+    robot.wtrJ()
+    initialSetup(camera_orientation)
+    
+    drefframeT=change_ref_frame_trans(robot.anchor)
+    newt = np.matmul(Translation,drefframeT)
+    print("Robot trans: ",newt)
+    
+    translate_arm_task(camera_orientation)
+    
+    orientate_arm_task(Rotation,camera_orientation,left=True)
+    
+    
+    # df.to_csv(path+'output.csv', index = None)
+    # # # 
+    
+    
+    
+    print("End")
 
 
 
