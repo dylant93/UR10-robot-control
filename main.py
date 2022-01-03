@@ -381,7 +381,7 @@ def initialSetup(camera_orientation):
         # robot.moveanchor()
         return
 
-def translate_arm_task(camera_orientation):
+def translate_arm_task(camera_orientation,newt):
     
     safety = 15
     #rightsideup arm mounted
@@ -413,7 +413,7 @@ def translate_arm_task(camera_orientation):
 
     return
 
-def orientate_arm_task(rotation,camera_orientation, left):
+def orientate_arm_task(Rotation,camera_orientation, left):
     rpyorientation = rmat2rpy(Rotation)/3.142*180
     print("RPY for final: ", rpyorientation)
 
@@ -474,6 +474,9 @@ camera_orientation = camera_orientation_list['upsidedown_mounted']
 #%% Execution
 
 if __name__ == '__main__':
+    
+    quickCapture(camera)
+    
     with open('final_tmat.p', 'rb') as f: 
         dict_tmat_pred = pickle.load(f)
         
@@ -495,7 +498,7 @@ if __name__ == '__main__':
     newt = np.matmul(Translation,drefframeT)
     print("Robot trans: ",newt)
     
-    translate_arm_task(camera_orientation)
+    translate_arm_task(camera_orientation,newt)
     
     orientate_arm_task(Rotation,camera_orientation,left=True)
     
