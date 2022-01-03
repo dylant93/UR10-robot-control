@@ -16,7 +16,16 @@ import numpy as np
 from PIL import Image
 import cv2
 
+"""
+Run to start capturing images. Press spacebar to capture an image. 
+change the resolution or fps and such as you deem fit
+not all resolutions suppot 30fps
 
+The current code uses cv2 to save the images. Its is much faster than useing PIL
+However, it has not been tested with nipuni or chinthaka's code. It might produce some unknown issues
+Use the commented out code above if unsure. It is much slower but it replicates our current method
+
+"""
 
 k4a = PyK4A(Config(color_resolution=pyk4a.ColorResolution.RES_3072P,
                     camera_fps=pyk4a.FPS.FPS_15,           

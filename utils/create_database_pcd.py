@@ -38,7 +38,7 @@ def savePCD(outputname,number=0,path="parallelroute2/"):
 
 
 if __name__ == '__main__':
-    outpath = '../definedpcds/test' #parallelroute/S05/WFOVS05/  #S05_3/
+    outpath = '../definedpcds/test' 
     depthpath = "../temp/"
     savePCD(outpath,0,depthpath)
     

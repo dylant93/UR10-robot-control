@@ -3,7 +3,7 @@ Most of the important files are here in the main directory.
 i'll briefly go through the files here. More info can be found inside the 
 individual files themselves.
 
-#Demo
+# Demo
 
 For the demo, theres only 3 main files.
 main_Capture_step1
@@ -22,3 +22,5 @@ Some various other files are the original
 - camera : is the main class that uses pyk4a for kinect azure
 - geometry: contains some useful transformation functions used in the various classes
 - plot: is sometimes useful to plot the coordinates when planning a robot movement
+
+<\br>

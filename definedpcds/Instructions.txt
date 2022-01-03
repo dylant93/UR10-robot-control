@@ -1,0 +1,9 @@
+Instructions for creating database point.
+1. Press ctrl del after the red part to del unwanted parts
+2. Use translate center set origin to move more or less to center
+3. rotate about x, -30 deg
+4. Y axis 90 degree
+5. Z axis 180 degrees, this aligns up the axis definitions correctly.
+~ X to the right, y up and z towards the viewer
+6. lastly,translate the origin to the tip of the cone.
+7. Roughly there and then save the ply.
