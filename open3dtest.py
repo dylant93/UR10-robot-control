@@ -355,8 +355,12 @@ def view(viewtransformation, gtpath):
     target = depth2pointcloud(viewtransformation,path)
     draw_registration_result(cad, target, inputtmat, sourcecolor=[0, 0.0, 0.929])
 
-def Main_2(sourcenumber,targetnumber):
 
+def Main_2(sourcenumber,targetnumber):
+    """
+    Manual registration 
+
+    """
 
     # pcdimport = "combine3.ply"
     # pcdimport = "S05_GL3cut2_open_axisadj3scaled.ply"
@@ -382,11 +386,7 @@ def Main_2(sourcenumber,targetnumber):
     #                                             voxel_size)
     result_fast = Manual(cad,target)
     
-    # temp = np.array([[1,0,0,0.],
-    #             [0,1,0,0.0],
-    #             [0,0,1,0],
-    #             [0,0,0,1]])
- 
+
     distance_threshold = voxel_size # voxel_size* 0.4   
  
     draw_registration_result(cad_down, target_down, result_fast.transformation )
@@ -418,219 +418,18 @@ def Main_2(sourcenumber,targetnumber):
     # print('Finalmatrix evaluation\n',evaluation)
     # return finalTmatrix, evaluation
     
-# Main_2(5,0)
-#this is for S05_3 0000.png
-trans00 = np.asarray([[0.79284568, -0.16378287, 0.58700161, -0.03031006], 
-                      [0.20855506, 0.97797086, -0.00881958, -0.04941181],
-                      [-0.57262598, 0.12941472, 0.80953772,0.44790431], 
-                      [0.0, 0.0, 0.0, 1.0]])
-
-#this is for newparallel route 0005.png
-trans05 = np.asarray([[0.18656294, -0.08154958, 0.97905257, -0.04873522], 
-                      [0.04166556, 0.99630912, 0.07504739, -0.00191811],
-                      [-0.98155909, 0.02679172, 0.18927217, 0.47325619], 
-                      [0.0, 0.0, 0.0, 1.0]])
-
-standardtrans05 = np.asarray([[0.05009544, 0.0166471, 0.99860569, -0.04047158], 
-                              [-0.02402853, 0.99959175, -0.01545814, -0.00101348],
-                              [-0.99845535, -0.02322064, 0.05047499, 0.46689229], 
-                              [0.0, 0.0, 0.0, 1.0]])
-
-#try method main2, which uses the nearest neighbour as a fast proposal, then use icp on the original one
-Main_2(0,0)
-
-# temp = np.array([[1,0,0,0.5],
-#                 [0,1,0,0],
-#                 [0,0,1,0],
-#                 [0,0,0,1]])
-
-gtpath = 'GT.json'   #GTrot.json GT.json
-path = 'parallelroute/S05/WFOVS05/' #parallelroute/S05/WFOVS05/  #S05_3/
-cadpath = "S05_GL3cut2_open_axisadj3scaled.ply"
-
-#%%
-
-# for i in range(22,33):
-#     try:
-#         f = open(gtpath,)
-#         data = json.load(f)
-#         # f.close()
-        
-#         if i<=5:
-#             targetpcd = 5-i
-#             sourcepcd = 5-i if i==0 else 5-i+1
-#         elif i>5 and i<11:
-#             targetpcd = i
-#             sourcepcd = i-1    
-#         elif i>=11 and i<22:
-#             targetpcd = i
-#             sourcepcd = i-11 if i==11 else i-1  
-#         elif i>=22 and i<33:
-#             targetpcd = i
-#             sourcepcd = i-11 if i==22 else i-1 
-            
-            
-  #%%      
-        
-        
-        
-#this is for rotation dataset
-        # targetpcd = i
-        # # sourcepcd = 7
-        # divisor = 7
-        # if i < 42:
-        #     sourcepcd = 7*((targetpcd/7)-1) if targetpcd%7 == 0 else targetpcd-1
-        # elif i > 42 and i < 78:
-        #     sourcepcd = 7*(((targetpcd-42)/6)) if (targetpcd-42)%6 == 0 else targetpcd-1
-        # elif i >= 78 and i < 120: 
-        #     sourcepcd = 7*(((targetpcd-78)/7))+71 if (targetpcd-78)%7 == 0 else targetpcd-1
-        #     if i ==78: sourcepcd = 0
-        # elif i >= 120: 
-        #     sourcepcd = 7*(((targetpcd-120)/6))+78 if (targetpcd-120)%6 == 0 else targetpcd-1
-        #     if i ==120: sourcepcd = 78
-        # sourcepcd = int((abs(sourcepcd) + sourcepcd) /2)
-        
-#%%        
-        
-    #     print(targetpcd,sourcepcd)
-    
-        
-    #     inputtmat = np.array(data['{!s}'.format(sourcepcd).zfill(4)]['Tmat'])
-    #     inputtmat = np.reshape(inputtmat, (4,4))
-    #     result = Main_1(sourcepcd,targetpcd,inputtmat,path,cadpath,draw = False)
-        
-        
-        
-        
-    #     finalTmatrix = list(result.transformation.flatten())
-    #     data["{!s}".format(str(targetpcd).zfill(4))] = {'Tmat':finalTmatrix, 
-    #                                                       'Fitness': result.fitness,
-    #                                                       'Inlier_rmse':result.inlier_rmse }
-    #     f = open(gtpath,"w")
-    #     json.dump(data, open(gtpath,"w"))
-    #     f.close()
-        
-    #     print(targetpcd,sourcepcd)
-        
-    #     # print("this works",data)
-    # except:
-    #     print("GT.json does not exist, generating first data point")  
-    #     firstpcd = 5
-    #     firstresult = autofirst()
-    #     firstmatrix = list(firstresult.transformation.flatten())
-    #     data = {"{!s}".format(str(firstpcd).zfill(4)) : {'Tmat':firstmatrix, 
-    #                                                       'Fitness': firstresult.fitness , 
-    #                                                       'Inlier_rmse':firstresult.inlier_rmse }}
-    #     f = open("GT.json","w")
-    #     json.dump(data, f)
-    #     f.close()
-
-# i = 150
-# targetpcd = i
-# # sourcepcd = 7
-# divisor = 7
 
 
+if __name__ == '__main__':
+    Main_2(0,0)
+    gtpath = 'GT.json'   #GTrot.json GT.json
+    path = 'parallelroute/S05/WFOVS05/' #parallelroute/S05/WFOVS05/  #S05_3/
+    cadpath = "S05_GL3cut2_open_axisadj3scaled.ply"
 
-# if i < 42:
-#     sourcepcd = 7*((targetpcd/7)-1) if targetpcd%7 == 0 else targetpcd-1
-# elif i >= 42 and i < 78:
-#     sourcepcd = 7*(((targetpcd-42)/6)) if (targetpcd-42)%6 == 0 else targetpcd-1
-# elif i >= 78 and i < 120: 
-#     sourcepcd = 7*(((targetpcd-78)/7))+71 if (targetpcd-78)%7 == 0 else targetpcd-1
-#     if i ==78: sourcepcd = 0
-# elif i >= 120: 
-#     sourcepcd = 7*(((targetpcd-120)/6))+78 if (targetpcd-120)%6 == 0 else targetpcd-1
-#     if i ==120: sourcepcd = 78
-    
-# # sourcepcd = int((abs(sourcepcd) + sourcepcd) /2)
-# print(targetpcd,sourcepcd)
-
-# data = {'as':1}
-# f = open("test.json","w")
-# json.dump(data, f)
-# f.close()
-
-# f = open('test.json',)
-# data = json.load(f)
-# data['assd'] = 2
-
-# json.dump(data, open("test.json", "w"))
-# # # inputtmat = np.array(data['0005']['Tmat'])
-# # # inputtmat = np.reshape(inputtmat, (4,4))
-# # # # data 
-    
-# f.close()
-    
-# sourcepcd = 5
-# targetpcd = 5
-# first,result = Main_1(sourcepcd,targetpcd,standardtrans05)
-# Manual()
 
 #######################################################################
 # savePCD('definedpcds/test',0,"parallelroute2/C12/normal/")
 #########################################################################
 
 
-# savePCD('definedpcds/S05_0',0,"parallelroute2/S05/")
-# dict_file={}
-# dict_file[5] = {
-#         'Tmat': 1, 
-#         'fitness': 2,
-#         'inlier_rmse':3
-#         }
-
-
-
-
-
-
-# loaded = pd.read_csv("newGT.csv", index_col=0)
-# Tmat = loaded.iloc[number]['Tmat']
-# Tmat = Tmat.strip('][').split(',')
-# Tmat = [float(e) for e in Tmat]
-# Tmat = np.reshape(np.array(Tmat),(4,4))
-# draw_registration_result(source, target, Tmat)   #source is yellow
-
-# draw_registration_result(source, target, trans05)
-
-# result = demo_manual_registration(source,target) 
-# print(result)
-
-# loaded = pd.DataFrame(columns=['png','Tmat'])
-# loaded = pd.read_csv("newGT.csv", index_col=0)
-# loaded.at[number, 'png'] = str(number).zfill(4)+'.png'
-# loaded.at[number, 'Tmat'] = list(result.flatten())
-# loaded.to_csv("newGT.csv")
-
-# o3d.io.write_point_cloud('test'+str(number)+'.ply', pcd2, write_ascii=True, compressed=False, print_progress=False)
-
-
-# R =  np.array([[0.7071067363577805, 0.0, 0.7071068260153116],[0.0, 1.0, 0.0],[-0.7071068260153116, 0.0, 0.7071067363577805]])
-# T = np.array([[0.0],[0.0],[0.45]])
-# trans_init = np.hstack((R,T))
-# trans_init = np.vstack((trans_init,np.array([0.0, 0.0, 0.0, 1.0])))
-
-
-
-# print("\nInitial alignment")
-# evaluation = o3d.pipelines.registration.evaluate_registration(
-#     pcd, pcd2, threshold, trans_init2)
-# print(evaluation)
-
-# print("Apply point-to-point ICP")
-# reg_p2p = o3d.pipelines.registration.registration_icp(
-#     pcd, pcd2, threshold, trans_init2,
-#     o3d.pipelines.registration.TransformationEstimationPointToPoint(), #TransformationEstimationPointToPlane 
-#                                                                         #TransformationEstimationPointToPoint
-#     o3d.pipelines.registration.ICPConvergenceCriteria(max_iteration=200))
-# print(reg_p2p)
-# print("Transformation is:")
-# print(reg_p2p.transformation)
-
-# draw_registration_result(pcd, pcd2, reg_p2p.transformation)
-  
-# evaluation = o3d.pipelines.registration.evaluate_registration(
-# pcd, pcd2, threshold, trans_init)
-# print(evaluation)                     
-                                
+           
