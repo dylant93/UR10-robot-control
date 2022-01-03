@@ -152,6 +152,31 @@ class robot():
         # self.
         return
     
+    def getaxis(self):
+        """
+        
+
+        Returns
+        -------
+        axis orientation of current anchor position
+        normal, vert and horizontal
+
+        """
+        rotation_matrix = getRmatrix(self.anchor[6],self.anchor[7],self.anchor[8])
+        rotation_matrix[0:,0] = rotation_matrix[0:,0]*-1
+        vert = np.squeeze(np.asarray(rotation_matrix[0:,0]))
+        hori = np.squeeze(np.asarray(rotation_matrix[0:,1]))
+        normal = np.squeeze(np.asarray(rotation_matrix[0:,2]))
+        # print("vert: ",rotation_matrix[0:,0])
+        # print("horizontal: ",rotation_matrix[0:,1])
+        # print("normal: ", rotation_matrix[0:,2] )
+        # print(rotation_matrix,self.anchor[9:])
+        
+        
+        
+        return normal,vert,hori
+    
+    
     def rotateonspot(self,thetaH=0,thetaV=0):
         """
         
@@ -159,10 +184,10 @@ class robot():
         Parameters
         ----------
         thetaH : TYPE, int
-            DESCRIPTION. The default is 0. Degrees to rotate horizontally (around verical axis)
+            DESCRIPTION. The default is 0. Degrees to rotate horizontally (around global verical axis)
             
         thetaV : TYPE, int
-            DESCRIPTION. The default is 0. Degrees to rotate vertically (around horizontal axis)
+            DESCRIPTION. The default is 0. Degrees to rotate vertically (around local horizontal axis)
             
     
         Returns
@@ -173,23 +198,17 @@ class robot():
         """
         
         identity = np.eye(3)
-        # rotation_matrix = getRmatrix(self.anchor[6],self.anchor[7],self.anchor[8])
-        # rotation_matrix[0:,0] = rotation_matrix[0:,0]*-1
-        # print("vert: ",rotation_matrix[0:,0])
-        # print("horizontal: ",rotation_matrix[0:,1])
-        # print("normal: ", rotation_matrix[0:,2] )
-        # print(rotation_matrix,self.anchor[9:])
+
         
         if(thetaH!=0):
             # normal = [self.home[0]-self.anchor[0],self.home[1]-self.anchor[1],self.home[2]-self.anchor[2]]
             # unitnormal = unit(np.array(normal))
+            
+            #you can use getaxis to get the normal and horizontal axis as well.
             rotation_matrix = getRmatrix(self.anchor[6],self.anchor[7],self.anchor[8])
-            newnorm = rotation_matrix[0:,2]
-            # newvert = rotation_matrix[0:,0]
-            
+            newnorm = rotation_matrix[0:,2]          
             newnorm = np.squeeze(np.asarray(newnorm))
-            # newvert = np.squeeze(np.asarray(newvert))
-            
+
             
             vaxis = self.anchor[9:]
             zaxis = np.array([0,0,1]) #using z axis
@@ -230,7 +249,7 @@ class robot():
             newv = np.matmul(rod,np.array(vaxis))
             
             self.anchor[9:] = newv
-            self.anchor[7]+=Vrad
+            self.anchor[7] += Vrad
             self.anchor[3:6] = rpy2rot(self.anchor)
         
         return
@@ -263,7 +282,7 @@ class robot():
     def rotateanchor(self,thetaH=0,thetaV=0): 
         
         """
-        Rotate anchor about the home position in degrees, Horizontal and Vertical axis specific for ease of use
+        Rotate anchor about the home position in degrees, local Horizontal and global Vertical axis specific for ease of use
         
         """
 
@@ -325,14 +344,7 @@ class robot():
             self.anchor[7]+=Vrad
             self.anchor[3:6] = rpy2rot(self.anchor)
             
-            
-            
-            # rotation_matrix = getRmatrix(self.anchor[6],self.anchor[7],self.anchor[8])
-            # rotation_matrix[0:,0] = rotation_matrix[0:,0]*-1
-            # normal = [self.home[0]-self.anchor[0],self.home[1]-self.anchor[1],self.home[2]-self.anchor[2]]
-            # print(rotation_matrix,self.anchor[9:],unit(np.array(normal)),np.cross(self.anchor[9:],unitnormal))
-            # print("vert: ",rotation_matrix[0:,0])
-            # print("horizontal: ",rotation_matrix[0:,1])
+
 
 
         return 
