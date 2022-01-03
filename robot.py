@@ -167,12 +167,6 @@ class robot():
         vert = np.squeeze(np.asarray(rotation_matrix[0:,0]))
         hori = np.squeeze(np.asarray(rotation_matrix[0:,1]))
         normal = np.squeeze(np.asarray(rotation_matrix[0:,2]))
-        # print("vert: ",rotation_matrix[0:,0])
-        # print("horizontal: ",rotation_matrix[0:,1])
-        # print("normal: ", rotation_matrix[0:,2] )
-        # print(rotation_matrix,self.anchor[9:])
-        
-        
         
         return normal,vert,hori
     

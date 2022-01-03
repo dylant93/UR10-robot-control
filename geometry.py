@@ -130,7 +130,7 @@ def unit(inpt):
 
 def rotateonaxis( mat , axis, theta):
     """
-    Takes in an input (3,3) matrix, an axis(3 row vector) to rotate around and the angle to rotate it by in degrees
+    Takes in an input (3,3) or (3,) matrix, an axis(3 row vector) to rotate around and the angle to rotate it by in degrees
     """
     
     identity = np.eye(3)

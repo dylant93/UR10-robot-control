@@ -14,16 +14,23 @@ from geometry import unit, getRmatrix, rotateonaxis, rmat2rot,rmat2rpy
 from plot import extractlog, plotxy, plotxz, plotyz, plot3d
 from matplotlib import pyplot as plt
 import time
+import pickle
 
 # from matplotlib import image
 
 #Options: depth_mode=pyk4a.DepthMode.NFOV_UNBINNED, NFOV_2X2BINNED, WFOV_2X2BINNED, 
 # if not specificed, color is BGRA 720p
 
-def calibrate(robot):
-    """# calibrate
+#%%
+#Tasks and movement sequences
+
+def calibrate_home_position(robot):
+    """# calibrate function. Use it to place the cornerblock and cone in the exact home position
+    
     # 9cm on length +5cm for safety, = 14cm
     # 8.9cm for width +5cm for safety = 13.9cm
+    
+    
     """
     
     robot.wtrJ()
@@ -57,15 +64,15 @@ def calibrate(robot):
     return
 
 
-def move(robot,df, h, v,t=6):
-    robot.rotateanchor(h,v)
-    robot.moveanchor(t=t)
-    robot.printanchor()
-    df = capturerecord(robot,camera,conetype,df)
-    return df
+
 
 def task(robot,camera,df,direction=1,originkeep = True):
-
+    
+    """
+    Direction parameter refers to either left of center or right of center. 
+    1 means it wil sweep left "timestep" number of times. while -1 means it will sweep right
+    """
+    
     timestep = 6
     totaldeg = 60
     interval = totaldeg / timestep
@@ -103,30 +110,43 @@ def task(robot,camera,df,direction=1,originkeep = True):
     return df
 
 def task2(robot,camera,df,interval=10,dim=0.5):
-    # robot.moveanchor()
-    # robot.printanchor()
-    # df = capturerecord(robot,camera,conetype,df)
+    
+    """
+    A movement sequence that translates the flyer around in a box sequence where the 2D box is on the vertical and horizontal axis
+    
+    """
     
     robot.getfixedtranslatebox(interval=interval, dim=dim)
+    
     for i in range(len(robot.translatebox)):
         robot.translateflyer(t=0.5, t2=3, interval=8)
         robot.printflyer()
         df = capturerecord(robot,camera,conetype,df)
         if i==35: return df
 
-    # log = robot.log
-    # log = extractlog(log)
-    # plot3d(log)
+
+    return df
+
+def rotateMove(robot,df, h, v,t=6):
+    robot.rotateanchor(h,v)
+    robot.moveanchor(t=t)
+    robot.printanchor()
+    df = capturerecord(robot,camera,conetype,df)
     return df
 
 def task3(robot,camera,df):
+    """
+    A movement sequence that rotates about a fixed home position. 
+    This is similar to task 1, but it sweeps from left to right in 12 different postions (task 1 is only 6 positions from the center)
+    Make sure that home is in robot.py is correctly specified and that the cone is calibrated corrected to the home position
+    """
     timestep = 12
     totaldeg = 120
     interval = totaldeg / timestep
-    df = move(robot,df,60,0)
+    df = rotateMove(robot,df,60,0)
     for i in range(6):
         for j in range(timestep):
-            df = move(robot,df,-interval,0,t=3)
+            df = rotateMove(robot,df,-interval,0,t=3)
             if(j == (timestep/2)-2):
                 robot.wtrJ()
         robot.wtrJ()
@@ -134,13 +154,13 @@ def task3(robot,camera,df):
             robot.wtrJ()
             return df
         else:
-            df = move(robot,df,120,10)
+            df = rotateMove(robot,df,120,10)
                     
     robot.wtrJ()
     return df
     
 
-    
+#%%    
 
 def capturerecord(robot,camera,conetype,df):
     
@@ -182,8 +202,7 @@ def capturerecord(robot,camera,conetype,df):
     theta = [flyer[6],-1*Pangle,(Yangle-0.7853981)]
         
     RelPose = np.matmul(drefframeT,POSE)
-    RelPose = np.round(RelPose,5)
-    # POSE = np.round(POSE,5)  
+    RelPose = np.round(RelPose,5) 
     homeorigin = np.matmul(homerefmat,negativepose) # this is the global coordinate syste changed to home cone as the new axis and origin
     homeorigin = np.round(homeorigin,5)  
     
@@ -194,6 +213,17 @@ def capturerecord(robot,camera,conetype,df):
 
     return df
 
+def quickCapture(camera):
+    """
+    quick capture, save and update counters    
+
+    """
+    camera.cap()
+    camera.saveupdate()
+    return
+
+
+#%% high level functions that transform camera axis to robot axis
 
 def change_ref_frame(home,anchor): # change reference frame creff for relative 
     normal = np.array([home[0]-anchor[0],home[1]-anchor[1],home[2]-anchor[2]])
@@ -304,13 +334,11 @@ def rotateoncamera(axischoice, theta):
     newv = np.matmul(rod,currentrotatin)
     robot.anchor[3:6] = rmat2rot(newv)
     robot.anchor[6:9] = rmat2rpy(newv)
-    # print()
-    # self.anchor[9:] = newv
-    # self.anchor[8] +=Hrad
-    # self.anchor[3:6] = rpy2rot(self.anchor)
+
     return
 
 #%%
+
 """
 1. Check robot connection T/F
 2. Check home distance if you need to perform fixed radial tasks and make sure that the 
@@ -333,27 +361,13 @@ conetype = "C12"
 
 #%% this is moving part
 
-import pickle
+
 
 
 with open('final_tmat.p', 'rb') as f: 
     dict_tmat_pred = pickle.load(f)
-robot.wtrJ()
-# print(robot.anchor)
-# robot.printanchor()
-# # rotateonspot
-# # rotateanchor
-# robot.rotateonspot_local(0,10)
-# robot.moveanchor()
-robot.rotateonspot_local(0,-45)
-print(robot.anchor)
-robot.rotateonspot_local(0,-45)
-# # rotateoncamera(0,45)
-robot.printanchor()
-robot.moveanchor()
-# print("ASDdddddddddddddddddddddddddddddddddddddd")
+    
 
-# time.sleep(3)
 
 tmat_1 = dict_tmat_pred
 
