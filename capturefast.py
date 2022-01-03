@@ -13,7 +13,7 @@ from pyk4a import Config, PyK4A
 # from loadimage import importpngoriginal
 # from matplotlib import image
 import numpy as np
-# from PIL import Image
+from PIL import Image
 import cv2
 
 
@@ -48,8 +48,13 @@ while 1:
         break
     
     if key== ord(' '):
-        # img_color = capture.color[:, :, 2::-1]
+        
         # img_color = capture.color
+         
+        #Use this with image lib, its the exact one we used but its really slow
+        # img_color = capture.color[:, :, 2::-1]
+        
+        #use this with cv2, stands to be tested, but is much faster
         img_color = capture.color[:,:,:3]
         img_deptht = capture.transformed_depth
         
