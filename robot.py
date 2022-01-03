@@ -198,9 +198,6 @@ class robot():
 
         """
         
-        identity = np.eye(3)
-
-        
         if(thetaH!=0):
             #you can use getaxis to get the normal and horizontal axis as well.
             rotation_matrix = getRmatrix(self.anchor[6],self.anchor[7],self.anchor[8])
@@ -212,14 +209,6 @@ class robot():
             
             
             Hrad = (pi*thetaH)/180
-            
-            # W = np.array([[0, -vaxis[2], vaxis[1]],
-            #            [vaxis[2], 0, -vaxis[0]],
-            #            [-vaxis[1], vaxis[0], 0]])
-        
-            # rod = identity + np.sin(Hrad)*W + (1-np.cos(Hrad)) * np.matmul(W,W)
-            # newv = np.matmul(rod,vaxis)
-            
             newv = rotateonaxis(vaxis,vaxis,thetaH)
             
             self.anchor[9:] = newv
@@ -228,24 +217,17 @@ class robot():
     
         
         if(thetaV!=0):
-            # normal = [self.home[0]-self.anchor[0],self.home[1]-self.anchor[1],self.home[2]-self.anchor[2]]
-            # unitnormal = unit(np.array(normal))
             
             rotation_matrix = getRmatrix(self.anchor[6],self.anchor[7],self.anchor[8])
             newnorm = rotation_matrix[0:,2]
             newnorm = np.squeeze(np.asarray(newnorm))
 
             vaxis = self.anchor[9:]
-            # haxis = np.cross(vaxis,unitnormal)
             haxis = np.cross(vaxis,newnorm)
-            Vrad = (pi*thetaV)/180
             
-            W = np.array([[0, -haxis[2], haxis[1]],
-                       [haxis[2], 0, -haxis[0]],
-                       [-haxis[1], haxis[0], 0]])
-        
-            rod = identity + np.sin(Vrad)*W + (1-np.cos(Vrad)) * np.matmul(W,W)
-            newv = np.matmul(rod,np.array(vaxis))
+            
+            Vrad = (pi*thetaV)/180
+            newv = rotateonaxis(vaxis,haxis,thetaV)
             
             self.anchor[9:] = newv
             self.anchor[7] += Vrad
@@ -284,7 +266,8 @@ class robot():
         
         """
         Rotate anchor about the home position in degrees, local Horizontal and global Vertical axis specific for ease of use
-        
+        This will move the anchor's coordinate position as well, not just the orientation. It will move in a fixed radius arc, so the
+        orientation and the camera will move always facing the home position.'
         """
 
         identity = np.eye(3)
@@ -307,6 +290,7 @@ class robot():
         
             rod = identity + np.sin(Hrad)*W + (1-np.cos(Hrad)) * np.matmul(W,W)
             output = np.matmul(rod,adjusted)
+            
             output[0]+=self.home[0]
             output[1]+=self.home[1]
             output[2]+=self.home[2]
