@@ -25,10 +25,8 @@ class Visualize():
         self.source = o3d.io.read_point_cloud(cadpath)
         self.target = self.createtarget()
         self.axis = o3d.geometry.TriangleMesh.create_coordinate_frame(size=0.15, origin=[0, 0, 0])  
-        self.userinput_tmat = np.array([[-0.1027032 , -0.0809252 ,  0.99141473,  0.08197522],
-                  [ 0.54766182, -0.83661997, -0.01155623, -0.06576173],
-                  [ 0.83037256,  0.54177314,  0.13024319, -0.51703579],
-                  [ 0.        ,  0.        ,  0.        ,  1.        ]])
+        #Change as you would deen fit to test
+        self.userinput_tmat = np.eye(4)
 
         #np.eye(4)
         
@@ -101,6 +99,9 @@ class Visualize():
         self.paint(self.source_temp)
         self.draw_geometries()
     
+    def set_userinput(self, input_matrix):
+        self.userinput_tmat = input_matrix
+        
     
         
     
@@ -110,6 +111,10 @@ if __name__=='__main__':
     cone = "S01"
     A = Visualize('temp/','final_tmat.p','definedpcds/'+ cone +'_00adjusted.ply')
     A.draw_pickle_registration()
+    # A.set_userinput = np.array([[-0.1027032 , -0.0809252 ,  0.99141473,  0.08197522],
+    #                             [ 0.54766182, -0.83661997, -0.01155623, -0.06576173],
+    #                             [ 0.83037256,  0.54177314,  0.13024319, -0.51703579],
+    #                             [ 0.        ,  0.        ,  0.        ,  1.        ]])
     # A.draw_userinput_registration()
     print("Running")
     A.printpickle()

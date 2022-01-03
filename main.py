@@ -424,15 +424,15 @@ def orientate_arm_task(Rotation,camera_orientation, left):
 # # """"Rightside up/ upside down read below properly"""
     if  camera_orientation == 0 or camera_orientation == 2:
         if left:
-            rotateoncamera(3,90)
+            rotateoncamera(camera_orientation,3,90)
         else:
-            rotateoncamera(3,-90)
+            rotateoncamera(camera_orientation,3,-90)
             
     elif  camera_orientation == 1:
         if left:
-            rotateoncamera(3,-90)
+            rotateoncamera(camera_orientation,3,-90)
         else:
-            rotateoncamera(3,90)
+            rotateoncamera(camera_orientation,3,90)
    
     robot.moveanchor()
     return
@@ -497,7 +497,7 @@ if __name__ == '__main__':
     robot.wtrJ()
     initialSetup(camera_orientation)
     
-    drefframeT=change_ref_frame_trans(robot.anchor)
+    drefframeT=change_ref_frame_trans(camera_orientation)
     newt = np.matmul(Translation,drefframeT)
     print("Robot trans: ",newt)
     
