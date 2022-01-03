@@ -63,9 +63,6 @@ def calibrate_home_position(robot):
     robot.wtr(calibrate,0.3,0.3,0,10)
     return
 
-
-
-
 def task(robot,camera,df,direction=1,originkeep = True):
     
     """
@@ -159,14 +156,7 @@ def task3(robot,camera,df):
     robot.wtrJ()
     return df
 
-
 def task_collectDatabase():
-    """
-    Collect for database
-    make sure that if cone is placed rightside up, that camera is also rightside up.
-    This Task requires you to mount the camera on the arm. If not. Whats the point?
-    """
-    
     robot.wtrJ()
 
     robot.rotateonspot(thetaV=30)
@@ -316,7 +306,9 @@ def rotateoncamera(axischoice, theta):
     theta : int
         angle of rotation in degree. 
 
-    This function does not update the anchor as it is meant to be a last movement
+    Returns
+    -------
+    None.
 
     """
     
@@ -342,25 +334,28 @@ def rotateoncamera(axischoice, theta):
     currentrotatin = getRmatrix(robot.anchor[6],robot.anchor[7],robot.anchor[8])
     
     
-    # Hrad = (3.142*theta)/180
+    # normal = [self.home[0]-self.anchor[0],self.home[1]-self.anchor[1],self.home[2]-self.anchor[2]]
+    # unitnormal = unit(np.array(normal))
+    # vaxis = self.anchor[9:]
+    # zaxis = np.array([0,0,1]) #using z axis
+    # haxis = np.cross(zaxis,unitnormal)
+    
+    
+    
+    Hrad = (3.142*theta)/180
     
     axis = chosenaxis[axischoice]
     
-    # W = np.array([[0, -axis[2], axis[1]],
-    #            [axis[2], 0, -axis[0]],
-    #            [-axis[1], axis[0], 0]])
+    W = np.array([[0, -axis[2], axis[1]],
+               [axis[2], 0, -axis[0]],
+               [-axis[1], axis[0], 0]])
 
-    # rod = identity + np.sin(Hrad)*W + (1-np.cos(Hrad)) * np.matmul(W,W)
-    # newv = np.matmul(rod,currentrotatin)
-    
-    newv = rotateonaxis(currentrotatin,axis,theta)
-    
+    rod = identity + np.sin(Hrad)*W + (1-np.cos(Hrad)) * np.matmul(W,W)
+    newv = np.matmul(rod,currentrotatin)
     robot.anchor[3:6] = rmat2rot(newv)
     robot.anchor[6:9] = rmat2rpy(newv)
 
     return
-
-
 
 #%%
 
@@ -371,22 +366,17 @@ def rotateoncamera(axischoice, theta):
 3. Check camera connection T/F
 4. Check name counter that it is 0 if you want the saving png to be 0000.png. set to 1 if you want 0001.png or
         if you dont want to overwrite the original image.
-5. Make sure that the camera orientation is selected correctly
 
 """
 
 
 path = 'temp\\'
-robot = robot(connection=True,homedistance = 1000, arm_mounted_camera = False, cameraFlip = True )
+robot = robot(connection=True,homedistance = 1000)
 camera = mykinectazure(connection=False,namecounter=0)
 camera.path = path
 
 df = pd.DataFrame( columns=['Cycle','Cone','RGBname', 'DEPTHname', 'RGBD', 'Pose', 'RelPose', 'Theta'])
 conetype = "C12"
-
-camera_orientation_list = {'rightsideup_arm':0,'upsidedown_mounted':1, 'rightsideup_mounted':2}
-camera_orientation = camera_orientation_list['upsidedown_mounted']
-
 
 
 #%% this is moving part
@@ -407,7 +397,7 @@ Translation = tmat_1[0:3,3]
 Rotation = tmat_1[0:3,0:3]
 
 
-robot.wtrJ()
+# robot.wtrJ()
 print("Camera trans: ",Translation)
 
 ##this is for the original orientation
@@ -420,10 +410,10 @@ print("Camera trans: ",Translation)
 # robot.translateglobcm(x=20)
 # robot.translateglobcm(z=-7)
 
-robot.rotateonspot_local(thetaV=-30) #try rotate on camera instead
-robot.translateglobcm(x=3.4) #originially 3.9
-robot.translateglobcm(z=-26.2)
-robot.moveanchor()
+# robot.rotateonspot(thetaV=-30) #try rotate on camera instead
+# robot.translateglobcm(x=3.4) #originially 3.9
+# robot.translateglobcm(z=-26.2)
+# robot.moveanchor()
 
 #right side up mount
 # robot.rotateonspot(thetaV=-30) #try rotate on camera instead
@@ -475,20 +465,20 @@ print("Robot trans: ",newt)
 
 ########################################################################
 
-rpyorientation = rmat2rpy(Rotation)/3.142*180
-print("RPY for final: ", rpyorientation)
+# rpyorientation = rmat2rpy(Rotation)/3.142*180
+# print("RPY for final: ", rpyorientation)
 
-xaxis = [0,-1,0]
-yaxis =  robot.anchor[9:]
-zaxis = np.cross(xaxis,yaxis)
+# xaxis = [0,-1,0]
+# yaxis =  robot.anchor[9:]
+# zaxis = np.cross(xaxis,yaxis)
 
-rotateoncamera(0,rpyorientation[0])
-rotateoncamera(1,rpyorientation[1])
-rotateoncamera(2,rpyorientation[2])
+# rotateoncamera(0,rpyorientation[0])
+# rotateoncamera(1,rpyorientation[1])
+# rotateoncamera(2,rpyorientation[2])
 
-# # """"Rightside up/ upside down read below properly"""
-rotateoncamera(3,-90) 
-robot.moveanchor()
+# # # """"Rightside up/ upside down read below properly"""
+# rotateoncamera(3,-90) 
+# robot.moveanchor()
 # ###############################################################################
 # # """ For original left images, 90 is correct, for flipped, take note it will likely be -90
 # """ For upside down: -90 for L and 90 for flipped
@@ -515,7 +505,11 @@ To flip rightside up/ upside down
 # 
 
 
-
+# %%
+"""
+Collect for database
+make sure that if cone is placed rightside up, that camera is also rightside up.
+"""
 
 
 

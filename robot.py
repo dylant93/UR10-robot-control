@@ -27,12 +27,12 @@ class robot():
     
     # homeJoint_newcamera = (31.07,-64.4,-134.49,18.98,58.31,89.94) #(from base, x,y,z is 550, 0, 550) use this if from upsie down camera reference
     
-    # homeJoint_old=(23.0,-105.0,-143.0,68.46,66.26,90)   #a safe joint posiion described in joint movements so as to avoid ur10 resolving 
+    homeJoint_database=(23.0,-105.0,-143.0,68.46,66.26,90)   #a safe joint posiion described in joint movements so as to avoid ur10 resolving 
                                                     #the positions weirdly if you use the 'move position' command
     k = pi/180
     
     #subnet = 255.255.255.0
-    def __init__(self,IP="192.168.1.100",PORT=30002,connection=True,homedistance=1000):
+    def __init__(self,IP="192.168.1.100",PORT=30002,connection=True,homedistance=1000, arm_mounted_camera = False, cameraFlip = True ):
         self.HOST_ROBOT =  IP
         self.PORT_ROBOT = PORT
         self.home = self.FL(homedistance,0,550,0,90,0) #old is 360  
@@ -44,6 +44,9 @@ class robot():
         self.log = np.array(self.home)
         self.printformat = {'XYZ':self.flyer[:3],'Quart':self.flyer[3:6],'RPY':self.flyer[6:9],'VAxis':self.flyer[9:]}
         self.connection = connection
+        
+        if(arm_mounted_camera):
+            self.homeJoint = self.homeJoint_database
         
         print("Starting Program.")
         if(self.connection):
@@ -79,6 +82,7 @@ class robot():
         """Write to robot via joint positions
         This is a safe bet to start as a sort of home position because writing by coordinate positions
         will sometimes have the robot move in strange ways from its internal calculations.
+        This will NOT update anchors as it is necessary for certain movement types
         """
         
         pos = self.homeJoint
