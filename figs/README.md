@@ -6,3 +6,4 @@ Z axis is always towards the tail of the cone. Y axis to the vertical
 - Fig5: suggested mounting position. A and B are accurate and easy planes to measure from.
 B is the exact height of the center of the camera lens and A is exactly 13.5cm from it. Use those to have
 an easier time 
+- networksettings: set this up so that you can control the UR10 via ethernet
