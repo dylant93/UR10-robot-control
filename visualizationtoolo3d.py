@@ -10,7 +10,7 @@ import pickle
 import open3d as o3d
 import copy
 
-class visualize():
+class Visualize():
     
     def __init__(self,path,picklename,cadpath):
         
@@ -72,7 +72,7 @@ class visualize():
                                       top = 100,
                                       left = 0,
                                       zoom=0.45,
-                                      front=[0,0,-1],
+                                      front=[0,0,1],
                                       lookat=[0,0,0],
                                       up=[0.0,-1.0,0.0])
         
@@ -108,7 +108,7 @@ class visualize():
 
 if __name__=='__main__':
     cone = "S01"
-    A = visualize('temp/','final_tmat.p','definedpcds/'+ cone +'_00adjusted.ply')
+    A = Visualize('temp/','final_tmat.p','definedpcds/'+ cone +'_00adjusted.ply')
     A.draw_pickle_registration()
     # A.draw_userinput_registration()
     print("Running")

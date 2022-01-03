@@ -288,7 +288,7 @@ def change_ref_frame_trans(camera_orientation):
 
 
     elif camera_orientation == 1:
-    #Upsidedown profile
+    #Upsidedown profile  
         t1 = rotateonaxis(np.eye(3),np.array([0,0,1]),270) 
         t2 = rotateonaxis(np.eye(3),np.array([0,1,0]),120)
 
@@ -475,29 +475,21 @@ camera_orientation = camera_orientation_list['upsidedown_mounted']
 
 if __name__ == '__main__':
     """
-    This has everything inside, follow steps 1 to 3 for a proper run down
+    This task is to verify the camera/ robot translation numbers.
+    I have added a visualization. Make sure you specify the cone type on lines 496
+    The input point cloud and the yellow must intersect correctly. If it does, high chance of successful robot movement
     """
-    
-    quickCapture(camera)
-    
+
     with open('final_tmat.p', 'rb') as f: 
         dict_tmat_pred = pickle.load(f)
         
-    
     tmat_1 = dict_tmat_pred
-    
-    #FYI: i left this here just in case
-    # flip = np.array([[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]])
-    # tmat_1 = np.matmul(tmat_1,flip)
     
     Translation = tmat_1[0:3,3]
     Rotation = tmat_1[0:3,0:3]
     print("Camera trans: ",Translation)
     
-    robot.wtrJ()
-    initialSetup(camera_orientation)
-    
-    drefframeT=change_ref_frame_trans(robot.anchor)
+    drefframeT=change_ref_frame_trans(camera_orientation)
     newt = np.matmul(Translation,drefframeT)
     print("Robot trans: ",newt)
     
@@ -506,13 +498,7 @@ if __name__ == '__main__':
     A = Visualize('temp/','final_tmat.p','definedpcds/'+ cone +'_00adjusted.ply')
     A.draw_pickle_registration()
     
-    translate_arm_task(camera_orientation,newt)
-    
-    orientate_arm_task(Rotation,camera_orientation,left=True)
-    
-    
-    # df.to_csv(path+'output.csv', index = None)
-    # # # 
+
     
     
     

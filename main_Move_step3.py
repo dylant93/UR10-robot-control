@@ -22,7 +22,7 @@ import pickle
 # if not specificed, color is BGRA 720p
 
 #%%
-#Tasks and movement sequences
+#Tasks and movement sequences for collecting data
 
 def calibrate_home_position(robot):
     """# calibrate function. Use it to place the cornerblock and cone in the exact home position
@@ -193,7 +193,7 @@ def task_collectDatabase():
     return    
     
 
-#%%    
+#%% Recording function
 
 def capturerecord(robot,camera,conetype,df):
     
@@ -256,7 +256,7 @@ def quickCapture(camera):
     return
 
 
-#%% high level functions that transform camera axis to robot axis
+#%% High level functions that transform camera axis to robot axis
 
 def change_ref_frame(home,anchor): # change reference frame creff for relative 
     normal = np.array([home[0]-anchor[0],home[1]-anchor[1],home[2]-anchor[2]])
@@ -352,7 +352,7 @@ def rotateoncamera(camera_orientation, axischoice, theta):
 
 
 
-#%%
+#%% DEMO TASKS
 
 def initialSetup(camera_orientation):
     """
@@ -475,20 +475,16 @@ camera_orientation = camera_orientation_list['upsidedown_mounted']
 
 if __name__ == '__main__':
     """
-    This has everything inside, follow steps 1 to 3 for a proper run down
+    Once verified CHECK lines 501!
+    LEFT = True must be verified! if it is a right cone, change parameter to false
     """
-    
-    quickCapture(camera)
     
     with open('final_tmat.p', 'rb') as f: 
         dict_tmat_pred = pickle.load(f)
         
     
     tmat_1 = dict_tmat_pred
-    
-    #FYI: i left this here just in case
-    # flip = np.array([[1, 0, 0, 0], [0, -1, 0, 0], [0, 0, -1, 0], [0, 0, 0, 1]])
-    # tmat_1 = np.matmul(tmat_1,flip)
+
     
     Translation = tmat_1[0:3,3]
     Rotation = tmat_1[0:3,0:3]
@@ -501,18 +497,10 @@ if __name__ == '__main__':
     newt = np.matmul(Translation,drefframeT)
     print("Robot trans: ",newt)
     
-    from visualizationtoolo3d import Visualize
-    cone = "S01"
-    A = Visualize('temp/','final_tmat.p','definedpcds/'+ cone +'_00adjusted.ply')
-    A.draw_pickle_registration()
-    
     translate_arm_task(camera_orientation,newt)
     
     orientate_arm_task(Rotation,camera_orientation,left=True)
     
-    
-    # df.to_csv(path+'output.csv', index = None)
-    # # # 
     
     
     
