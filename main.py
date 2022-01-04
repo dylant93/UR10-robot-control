@@ -460,7 +460,7 @@ Go into the UR10 and remember to change the fixed axis from 60/-60mm appropriate
 
 
 path = 'temp\\'
-robot = robot(connection=True,homedistance = 1000, arm_mounted_camera = False, cameraFlip = True )
+robot = robot(IP="192.168.1.100",connection=True,homedistance = 1000, arm_mounted_camera = False, cameraFlip = True )
 camera = mykinectazure(connection=False,namecounter=0)
 camera.path = path
 

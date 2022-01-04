@@ -32,7 +32,7 @@ class robot():
     k = pi/180
     
     #subnet = 255.255.255.0
-    def __init__(self,IP="192.168.1.100",PORT=30002,connection=True,homedistance=1000, arm_mounted_camera = False, cameraFlip = True ):
+    def __init__(self,IP="192.168.1.1",PORT=30002,connection=True,homedistance=1000, arm_mounted_camera = False, cameraFlip = True ):
         self.HOST_ROBOT =  IP
         self.PORT_ROBOT = PORT
         self.home = self.FL(homedistance,0,550,0,90,0) #old is 360  
