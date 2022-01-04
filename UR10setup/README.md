@@ -1,0 +1,1 @@
+- networksettings: set this up so that you can control the UR10 via ethernet

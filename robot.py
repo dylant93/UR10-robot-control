@@ -164,7 +164,12 @@ class robot():
         -------
         axis orientation of current anchor position
         normal, vert and horizontal
-
+        
+        if you were curious, you might notice that that its strange that vertical axis for getaxis is the 0th column (x axis)
+        while original robot vertical axis should be the 2th column (z axis)
+        This is because the arm is rotated 90 degrees about its y axis for ease of handling the camera.
+        Hence rotating its local orientation axis such that z is now pointing towards home and x is pointing down.
+        Resulting in the columns dictated for vert, hori and normal
         """
         rotation_matrix = getRmatrix(self.anchor[6],self.anchor[7],self.anchor[8])
         rotation_matrix[0:,0] = rotation_matrix[0:,0]*-1
