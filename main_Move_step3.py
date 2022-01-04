@@ -478,6 +478,7 @@ if __name__ == '__main__':
     Once verified CHECK lines 501!
     LEFT = True must be verified! if it is a right cone, change parameter to false
     REMOVE THE CAMERA PROFILE
+    IF YOU CHANGED THE metalprofile MOUNT SETUP GO TO initialSetup function and change the offsets accordingly
     """
     
     with open('final_tmat.p', 'rb') as f: 
@@ -492,7 +493,8 @@ if __name__ == '__main__':
     print("Camera trans: ",Translation)
     
     robot.wtrJ()
-    initialSetup(camera_orientation)
+    #Go hereto change the offsets
+    initialSetup(camera_orientation) 
     
     drefframeT=change_ref_frame_trans(camera_orientation)
     newt = np.matmul(Translation,drefframeT)
